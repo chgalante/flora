@@ -16,7 +16,6 @@ AllowAllConstructorInitializersOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortBlocksOnASingleLine: Empty
 AllowShortFunctionsOnASingleLine: Empty
-BreakBeforeBraces: Allman
 BinPackArguments: false
 BinPackParameters: false
 PenaltyReturnTypeOnItsOwnLine: 1000000
