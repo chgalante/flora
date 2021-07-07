@@ -7,22 +7,20 @@ namespace FloraEngine {
 class Application {
 public:
   Application() {
-    b_IsRunning = true;
+    bIsRunning = true;
+    OnAttach();
   }
 
   ~Application() {}
 
-  bool IsRunning() {
-    return b_IsRunning;
-  }
+  void         Run();
+  bool         IsRunning();
+  virtual void OnAttach();
+  virtual void OnUpdate();
+  virtual void OnDetach();
 
-  void Run() {
-    while (IsRunning()) {
-      std::cout << "FloraEngine!" << std::endl;
-    }
-  }
-
-  bool b_IsRunning = false;
+private:
+  bool bIsRunning = false;
 };
 
 /* To be defined by client */
