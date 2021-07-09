@@ -1,16 +1,23 @@
 #pragma once
 
 #include "pch.h"
+
+// GLAD
+#include <glad/glad.h>
+// GLFW
 #include <GLFW/glfw3.h>
 
 namespace FloraEngine {
+
 class Window {
 public:
-  Window() {
+  Window();
+  ~Window(){};
 
-    glfwWindowHint(GLFW_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_VERSION_MINOR, 1);
-    GLFWwindow *window = glfwCreateWindow(640, 480, "FloraEngine", NULL, NULL);
-  }
+public:
+  void OnUpdate();
+
+private:
+  GLFWwindow *mWindow;
 };
 } // namespace FloraEngine

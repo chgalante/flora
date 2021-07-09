@@ -1,6 +1,7 @@
 #pragma once
 
-#include "pch.h"
+#include "Flora/Application/Window.h"
+#include "Flora/Base.h"
 
 namespace FloraEngine {
 
@@ -8,19 +9,21 @@ class Application {
 public:
   Application() {
     bIsRunning = true;
-    OnAttach();
   }
-
   ~Application() {}
 
-  void         Run();
-  bool         IsRunning();
-  virtual void OnAttach();
-  virtual void OnUpdate();
-  virtual void OnDetach();
+public:
+  void Run();
+  bool IsRunning();
+
+public:
+  virtual void OnAttach() = 0;
+  virtual void OnUpdate() = 0;
+  virtual void OnDetach() = 0;
 
 private:
-  bool bIsRunning = false;
+  bool          bIsRunning = false;
+  Scope<Window> pWindow;
 };
 
 /* To be defined by client */

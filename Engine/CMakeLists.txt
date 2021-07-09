@@ -1,23 +1,46 @@
 cmake_minimum_required(VERSION 3.20.5)
-project (FloraEngine CXX)
-set(CMAKE_CXX_STANDARD 17)
+project (FloraEngine C CXX)
 
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# Don't build GLFW tests, examples and documentation
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+
+
+# Add subdirectories
 add_subdirectory(vendor/glfw)
 
-include_directories(
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}/Flora/
-  ${CMAKE_CURRENT_SOURCE_DIR}/Application/
-)
-
+# FloraEngine Static Library
 add_library(FloraEngine STATIC
+  ${CMAKE_CURRENT_SOURCE_DIR}/FloraEngine.cpp
+
   ${CMAKE_CURRENT_SOURCE_DIR}/Flora/Application/Application.cpp
-  
+  ${CMAKE_CURRENT_SOURCE_DIR}/Flora/Application/Window.cpp
+
+  ${CMAKE_CURRENT_SOURCE_DIR}/vendor/glad/src/glad.c
 )
 
-link_libraries(FloraEngine
-  PUBLIC glfw
+# Includes
+target_include_directories(FloraEngine
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/vendor/glfw/include/
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/vendor/spdlog/include/
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/vendor/glad/include/
 )
+
+# Find packages
+find_package(OpenGL REQUIRED)
+
+# link libraries
+target_link_libraries(FloraEngine
+  glfw
+  OpenGL::GL
+)
+
 
 # Platform Defines
 if (WIN32)
@@ -33,4 +56,4 @@ if (APPLE)
 endif (APPLE)
 
 # Configuration Defines
-set(CMAKE_CXX_FLAGS_DEBUG "$(CMAKE_CXX_FLAGS_DEBUG) -DFE_DEBUG")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DFE_DEBUG")

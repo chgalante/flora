@@ -3,9 +3,16 @@
 namespace FloraEngine {
 
 void Application::Run() {
-  std::cout << "FloraEngine Started" << std::endl;
+  /* Create Application Window */
+  Scope<Window> pWindow = CreateScope<Window>();
+
+  /* Attach Application */
+  OnAttach();
+
+  /* App Core */
   while (IsRunning()) {
-    OnUpdate();
+    // OnUpdate();
+    pWindow->OnUpdate();
   }
 }
 
