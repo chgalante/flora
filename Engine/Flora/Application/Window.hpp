@@ -15,9 +15,9 @@ public:
   ~Window(){};
 
 public:
-  void OnUpdate();
+  bool OnUpdate();
 
 private:
-  GLFWwindow *mWindow;
+  GLFWwindow *pWindow;
 };
 } // namespace FloraEngine

@@ -2,7 +2,6 @@
     "configurations": [
         {
             "name": "Linux",
-            "compileCommands": "${workspaceFolder}/build/compile_commands.json",
             "defines": [],
             "compilerPath": "/usr/bin/clang",
             "cStandard": "c17",

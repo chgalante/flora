@@ -1,25 +1,35 @@
-#include "Flora/Application/Window.h"
+#include "Window.hpp"
+#include "Flora/Base.hpp"
+#include "Flora/Utilities/Log.hpp"
 
 namespace FloraEngine {
 
 Window::Window() {
 
-  glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  mWindow = glfwCreateWindow(640, 480, "FloraEngine", NULL, NULL);
-  glfwMakeContextCurrent(mWindow);
+
+  glfwInit();
+  pWindow = glfwCreateWindow(640, 480, "FloraEngine", NULL, NULL);
+  if (!pWindow) {
+    FE_CORE_CRITICAL("GLFW failed to create window");
+  }
+
+  glfwMakeContextCurrent(pWindow);
 
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-    std::cout << "Failed to initialize OpenGL context" << std::endl;
+    FE_CORE_CRITICAL("Failed to initialize OpenGL Context!");
   }
   glViewport(0, 0, 640, 480);
 }
 
-void Window::OnUpdate() {
+bool Window::OnUpdate() {
   glfwPollEvents();
-  glfwSwapBuffers(mWindow);
+  glfwSwapBuffers(pWindow);
+
+  /* Returns false if the window should close to signal app termination */
+  return !glfwWindowShouldClose(pWindow);
 }
 
 } // namespace FloraEngine

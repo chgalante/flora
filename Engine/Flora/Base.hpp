@@ -29,5 +29,3 @@ template <typename T, typename... Args> constexpr Scope<T> CreateScope(Args &&..
 }
 
 }; // namespace FloraEngine
-
-#include "Flora/Utilities/Log.h"
