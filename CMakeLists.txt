@@ -6,13 +6,13 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_subdirectory(Engine)
 
 include_directories(
-  ${CMAKE_CURRENT_SOURCE_DIR}/Engine
-  ${CMAKE_CURRENT_SOURCE_DIR}/Engine/vendor/spdlog/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/Garden
+  "${CMAKE_CURRENT_SOURCE_DIR}/Engine"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Engine/vendor/spdlog/include"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Garden"
 )
 
 add_executable(Garden
-  ${CMAKE_CURRENT_SOURCE_DIR}/Garden/GardenApp.cpp
+  "${CMAKE_CURRENT_SOURCE_DIR}/Garden/GardenApp.cpp"
 )
 
 target_link_libraries(Garden

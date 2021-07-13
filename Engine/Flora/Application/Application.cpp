@@ -2,18 +2,6 @@
 
 namespace FloraEngine {
 
-ApplicationLayerStack::ApplicationLayerStack() {
-  iterTop = sApplicationLayerStack.begin();
-}
-
-void ApplicationLayerStack::PushLayer(Ref<ApplicationLayer> application_layer) {
-  sApplicationLayerStack.insert(iterTop, application_layer);
-}
-void ApplicationLayerStack::PushOverlay(
-    Ref<ApplicationLayer> application_layer) {
-  sApplicationLayerStack.insert(iterTop + 1, application_layer);
-}
-
 void Application::Run() {
   /* Create Application Window */
   Scope<Window> pWindow = CreateScope<Window>();
