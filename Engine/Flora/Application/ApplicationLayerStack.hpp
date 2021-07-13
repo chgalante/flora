@@ -16,6 +16,6 @@ public:
 
 private:
   std::vector<Ref<ApplicationLayer>>::iterator iterTop;
-  std::vector<Ref<ApplicationLayer>>           vecApplicationLayerStack;
+  std::vector<Ref<ApplicationLayer>>           vecApplicationLayers;
 };
 } // namespace FloraEngine
