@@ -10,6 +10,7 @@
 namespace FloraEngine {
 
 class Window {
+
 public:
   Window();
   ~Window(){};
@@ -20,4 +21,5 @@ public:
 private:
   GLFWwindow *pWindow;
 };
+
 } // namespace FloraEngine

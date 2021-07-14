@@ -19,7 +19,6 @@ add_library(FloraEngine STATIC
 
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Application/Application.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Application/ApplicationLayer.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Application/ApplicationLayerStack.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Application/Window.cpp"
 
   "${CMAKE_CURRENT_SOURCE_DIR}/vendor/glad/src/glad.c"

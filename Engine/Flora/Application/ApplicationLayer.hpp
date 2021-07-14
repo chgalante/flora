@@ -3,12 +3,14 @@
 namespace FloraEngine {
 
 class ApplicationLayer {
+
 public:
   ApplicationLayer();
-  ~ApplicationLayer(){};
+  ~ApplicationLayer();
 
   virtual void OnAttach();
   virtual void OnUpdate();
   virtual void OnDetach();
 };
+
 } // namespace FloraEngine
