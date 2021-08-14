@@ -1,4 +1,8 @@
 #include "GardenApp.hpp"
+#include "FloraEngine.hpp"
+
+static FloraEngine::Mesh *  mesh;
+static FloraEngine::Shader *shader;
 
 class RenderLayer : public FloraEngine::ApplicationLayer {
 public:
@@ -7,10 +11,15 @@ public:
 
   virtual void OnAttach() override {
     FE_TRACE("RenderLayer Attached!");
+    mesh   = new FloraEngine::Mesh();
+    shader = new FloraEngine::Shader("../Engine/Flora/Resources/vertex.vs",
+                                     "../Engine/Flora/Resources/fragment.fs");
   }
 
   virtual void OnUpdate() override {
     /* Do Something, not nothing */
+
+    FloraEngine::RenderCommand::DrawIndices(mesh, shader);
   }
 
   virtual void OnDetach() override {
@@ -40,7 +49,6 @@ Garden::Garden() : Application() {
   FE_TRACE("Garden App Started!");
   PushLayer(new RenderLayer());
   PushOverlay(new UILayer());
-  PushLayer(new RenderLayer());
 }
 
 FloraEngine::Application *FloraEngine::CreateApplication() {

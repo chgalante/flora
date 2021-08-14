@@ -15,7 +15,6 @@ public:
   Window();
   ~Window(){};
 
-public:
   bool OnUpdate();
 
 private:

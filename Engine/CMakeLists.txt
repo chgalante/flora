@@ -21,6 +21,13 @@ add_library(FloraEngine STATIC
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Application/ApplicationLayer.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Application/Window.cpp"
 
+  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Render/RenderCommand.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Render/Shader.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Render/Camera.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Render/Mesh.cpp"
+
+
+
   "${CMAKE_CURRENT_SOURCE_DIR}/vendor/glad/src/glad.c"
 )
 
@@ -36,6 +43,7 @@ target_include_directories(FloraEngine
   PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/vendor/glfw/include/"
   PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/vendor/spdlog/include/"
   PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/vendor/glad/include/"
+  PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/vendor/glm/"
 )
 
 # Find packages

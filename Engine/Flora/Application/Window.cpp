@@ -11,7 +11,7 @@ Window::Window() {
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   glfwInit();
-  pWindow = glfwCreateWindow(640, 480, "FloraEngine", NULL, NULL);
+  pWindow = glfwCreateWindow(1280, 720, "FloraEngine", NULL, NULL);
   if (!pWindow) {
     FE_CORE_CRITICAL("GLFW failed to create window");
   }

@@ -13,18 +13,22 @@ public:
   Application();
   ~Application() {}
 
-public:
   void Run();
   bool IsRunning();
 
   void PushLayer(ApplicationLayer *application_layer);
   void PushOverlay(ApplicationLayer *application_overlay);
 
+  virtual void OnAttach() = 0;
+  virtual void OnUpdate() = 0;
+  virtual void OnDetach() = 0;
+
 private:
-  bool                            mIsRunning = false;
-  Scope<Window>                   mWindow;
-  std::vector<ApplicationLayer *> mLayers;
-  uint32_t                        mLayerInsertIndex;
+  Scope<std::vector<ApplicationLayer *>> mLayers;
+  Scope<Window>                          mWindow;
+
+  bool     mIsRunning = false;
+  uint32_t mLayerInsertIndex;
 };
 
 /* To be defined by client */
