@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20.5)
+cmake_minimum_required(VERSION 3.16.3)
 project (FloraEngine C CXX)
 
 set(CMAKE_C_STANDARD 11)
@@ -20,13 +20,13 @@ add_library(FloraEngine STATIC
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Application/Application.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Application/ApplicationLayer.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Application/Window.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Application/Event/Event.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Application/Event/ApplicationEvent.cpp"
 
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Render/RenderCommand.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Render/Shader.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Render/Camera.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Render/Mesh.cpp"
-
-
 
   "${CMAKE_CURRENT_SOURCE_DIR}/vendor/glad/src/glad.c"
 )
