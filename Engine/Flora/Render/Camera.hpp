@@ -8,4 +8,6 @@ public:
   ~Camera();
 
 private:
+  glm::mat4 mViewMatrix;
+  glm::mat4 mProjectionMatrix;
 };

@@ -21,7 +21,7 @@ add_library(FloraEngine STATIC
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Application/ApplicationLayer.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Application/Window.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Application/Event/Event.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Application/Event/ApplicationEvent.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Application/Event/WindowEvent.cpp"
 
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Render/RenderCommand.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Render/Shader.cpp"

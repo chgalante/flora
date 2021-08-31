@@ -7,12 +7,12 @@ add_subdirectory(Engine)
 
 include_directories(
   "${CMAKE_CURRENT_SOURCE_DIR}/Engine"
-  "${CMAKE_CURRENT_SOURCE_DIR}/Engine/vendor/spdlog/include"
   "${CMAKE_CURRENT_SOURCE_DIR}/Garden"
 )
 
 add_executable(Garden
-  "${CMAKE_CURRENT_SOURCE_DIR}/Garden/GardenApp.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Garden/Garden.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Garden/DebugLayer.cpp"
 )
 
 target_link_libraries(Garden

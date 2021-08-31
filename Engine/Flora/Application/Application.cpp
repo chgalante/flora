@@ -2,12 +2,18 @@
 
 namespace FloraEngine {
 
-Application::Application() {
+Application *Application::sInstance = nullptr;
 
-  mLayers = CreateScope<std::vector<ApplicationLayer *>>();
+Application::Application() {
+  sInstance = this;
 
   mIsRunning        = true;
   mLayerInsertIndex = 0;
+  mLayers           = CreateScope<std::vector<ApplicationLayer *>>();
+
+  /* Create Application Window */
+  mWindow = CreateScope<Window>();
+  mWindow->Init();
 }
 
 /* ApplicationLayer Stack:
@@ -42,10 +48,7 @@ void Application::PushOverlay(ApplicationLayer *application_overlay) {
 
 void Application::Run() {
 
-  /* Create Application Window */
-  Scope<Window> pWindow = CreateScope<Window>();
-
-  /* Attach each of the application layers */
+  /* Attach Layers */
   for (int32_t idx = mLayers->size() - 1; idx >= 0; idx--) {
     (*mLayers)[idx]->OnAttach();
   }
@@ -53,7 +56,7 @@ void Application::Run() {
   /* App Core */
   while (IsRunning()) {
     /* Exit from application core loop when the window should close */
-    if (!pWindow->OnUpdate()) {
+    if (!mWindow->OnUpdate()) {
       mIsRunning = false;
       break;
     }
@@ -64,6 +67,21 @@ void Application::Run() {
     }
   }
 }
+
+void Application::OnEvent(Event &event) {
+  for (int32_t idx = mLayers->size() - 1; idx >= 0; idx--) {
+    (*mLayers)[idx]->OnEvent(event);
+  }
+}
+
+Application::~Application() {
+  /* Detach Layers */
+  for (int32_t idx = mLayers->size() - 1; idx >= 0; idx--) {
+    (*mLayers)[idx]->OnDetach();
+  }
+}
+
+void Application::OnRender() {}
 
 bool Application::IsRunning() {
   return mIsRunning;

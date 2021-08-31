@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Flora/Application/Application.hpp"
 #include "Flora/Base.hpp"
 #include "Flora/Utilities/Log.hpp"
@@ -7,7 +6,7 @@
 
 extern FloraEngine::Application *FloraEngine::CreateApplication();
 
-int main(int argc, char **argv) {
+__attribute__((weak)) int main(int argc, char **argv) {
 
   FloraEngine::Log::Init();
 
@@ -20,6 +19,5 @@ int main(int argc, char **argv) {
   /* Start Application Core */
   pApp->Run();
 
-  /* Exit Application */
   return 0;
 }

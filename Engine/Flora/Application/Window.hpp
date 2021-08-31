@@ -1,5 +1,4 @@
 #pragma once
-
 #include "pch.h"
 
 // GLAD
@@ -12,13 +11,14 @@ namespace FloraEngine {
 class Window {
 
 public:
-  Window();
+  Window(){};
   ~Window(){};
 
+  bool Init();
   bool OnUpdate();
 
 private:
-  GLFWwindow *pWindow;
+  GLFWwindow *mWindow;
 };
 
 } // namespace FloraEngine

@@ -1,3 +1,4 @@
+#pragma once
 #include "FloraEngine.hpp"
 
 class Garden : public FloraEngine::Application {
