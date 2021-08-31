@@ -1,7 +1,7 @@
 #pragma once
-#include "Flora/Application/Application.hpp"
-#include "Flora/Base.hpp"
-#include "Flora/Utilities/Log.hpp"
+#include "Core/Application.hpp"
+#include "Core/Base.hpp"
+#include "Core/Log.hpp"
 #include "pch.h"
 
 extern FloraEngine::Application *FloraEngine::CreateApplication();

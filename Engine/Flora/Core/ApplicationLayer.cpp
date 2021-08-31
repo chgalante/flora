@@ -1,6 +1,6 @@
 #include "ApplicationLayer.hpp"
-#include "Event/WindowEvent.hpp"
-#include "Flora/Utilities/Log.hpp"
+#include "Core/Log.hpp"
+#include "Events/WindowEvent.hpp"
 
 namespace FloraEngine {
 
@@ -8,9 +8,10 @@ ApplicationLayer::ApplicationLayer() {}
 
 ApplicationLayer::~ApplicationLayer() {}
 
+void ApplicationLayer::OnEvent(Event &e) {}
+
 void ApplicationLayer::OnAttach() {}
 void ApplicationLayer::OnUpdate() {}
 void ApplicationLayer::OnDetach() {}
-void ApplicationLayer::OnEvent(Event &e) {}
 
 } // namespace FloraEngine

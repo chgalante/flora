@@ -17,16 +17,19 @@ add_subdirectory(vendor/glfw)
 add_library(FloraEngine STATIC
   "${CMAKE_CURRENT_SOURCE_DIR}/FloraEngine.cpp"
 
-  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Application/Application.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Application/ApplicationLayer.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Application/Window.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Application/Event/Event.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Application/Event/WindowEvent.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Core/Application.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Core/ApplicationLayer.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Core/Window.cpp"
 
-  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Render/RenderCommand.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Render/Shader.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Render/Camera.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Render/Mesh.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Renderer/RenderCommand.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Renderer/Shader.cpp"
+
+  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Events/Event.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Events/WindowEvent.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Events/InputEvent.cpp"
+
+  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Scene/Camera.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Scene/Mesh.cpp"
 
   "${CMAKE_CURRENT_SOURCE_DIR}/vendor/glad/src/glad.c"
 )
@@ -40,6 +43,7 @@ target_precompile_headers(FloraEngine PRIVATE
 # Includes
 target_include_directories(FloraEngine
   PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/"
+  PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Flora/"
   PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/vendor/glfw/include/"
   PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/vendor/spdlog/include/"
   PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/vendor/glad/include/"

@@ -1,20 +1,14 @@
 #include "DebugLayer.hpp"
+#include "Scene/Camera.hpp"
 
-static FloraEngine::Mesh *  mesh;
-static FloraEngine::Shader *shader;
+FloraEngine::Camera camera;
 
 void DebugLayer::OnAttach() {
   FE_TRACE("DebugLayer Attached!");
-  mesh   = new FloraEngine::Mesh();
-  shader = new FloraEngine::Shader("../Engine/Flora/Resources/vertex.vs",
-                                   "../Engine/Flora/Resources/fragment.fs");
+  camera = FloraEngine::Camera();
 }
 
-void DebugLayer::OnUpdate() {
-  /* Do Something, not nothing */
-
-  FloraEngine::RenderCommand::DrawIndices(mesh, shader);
-}
+void DebugLayer::OnUpdate() {}
 
 void DebugLayer::OnDetach() {
   FE_TRACE("DebugLayer Detached!");

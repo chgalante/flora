@@ -1,5 +1,5 @@
 #pragma once
-#include "Mesh.hpp"
+#include "Scene/Mesh.hpp"
 #include "Shader.hpp"
 
 namespace FloraEngine {

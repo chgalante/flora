@@ -55,15 +55,18 @@ void Application::Run() {
 
   /* App Core */
   while (IsRunning()) {
-    /* Exit from application core loop when the window should close */
-    if (!mWindow->OnUpdate()) {
-      mIsRunning = false;
-      break;
-    }
 
     /* Update each of the application layers */
     for (int32_t idx = mLayers->size() - 1; idx >= 0; idx--) {
       (*mLayers)[idx]->OnUpdate();
+    }
+
+    /* Update window, swapping buffers and polling for events.
+     *  Exit the application if the window should close.
+     *  TODO: Exit Dialogue */
+    if (!mWindow->OnUpdate()) {
+      mIsRunning = false;
+      break;
     }
   }
 }

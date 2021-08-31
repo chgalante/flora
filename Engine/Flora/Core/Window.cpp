@@ -1,9 +1,9 @@
-#include "Flora/Application/Window.hpp"
-#include "Event/InputEvent.hpp"
-#include "Event/WindowEvent.hpp"
-#include "Flora/Application/Application.hpp"
-#include "Flora/Base.hpp"
-#include "Flora/Utilities/Log.hpp"
+#include "Core/Window.hpp"
+#include "Core/Application.hpp"
+#include "Core/Base.hpp"
+#include "Core/Log.hpp"
+#include "Events/InputEvent.hpp"
+#include "Events/WindowEvent.hpp"
 
 namespace FloraEngine {
 
@@ -26,7 +26,7 @@ bool Window::Init() {
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
     FE_CORE_CRITICAL("Failed to initialize OpenGL Context!");
   }
-  glViewport(0, 0, 640, 480);
+  glViewport(0, 0, 1280, 720);
 
   /* Log OpenGL context info */
   glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nbr_attribs);

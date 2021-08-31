@@ -1,8 +1,8 @@
 #pragma once
-#include "Flora/Application/ApplicationLayer.hpp"
-#include "Flora/Application/Event/Event.hpp"
-#include "Flora/Application/Window.hpp"
-#include "Flora/Base.hpp"
+#include "Core/ApplicationLayer.hpp"
+#include "Core/Base.hpp"
+#include "Core/Window.hpp"
+#include "Events/Event.hpp"
 #include "pch.h"
 
 namespace FloraEngine {

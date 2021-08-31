@@ -1,5 +1,5 @@
 #include "Shader.hpp"
-#include "Flora/Utilities/Log.hpp"
+#include "Core/Log.hpp"
 
 // GLAD
 #include <glad/glad.h>

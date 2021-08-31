@@ -1,5 +1,5 @@
 #pragma once
-#include "Event/Event.hpp"
+#include "Events/Event.hpp"
 #include "pch.h"
 
 namespace FloraEngine {
@@ -10,10 +10,11 @@ public:
   ApplicationLayer();
   ~ApplicationLayer();
 
+  virtual void OnEvent(Event &e);
+
   virtual void OnAttach();
   virtual void OnUpdate();
   virtual void OnDetach();
-  virtual void OnEvent(Event &e);
 
   void SetEventCallback(std::function<bool()> callback);
 };

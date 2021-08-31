@@ -6,10 +6,11 @@ public:
   DebugLayer() : ApplicationLayer() {}
   ~DebugLayer() {}
 
-  virtual void OnEvent(FloraEngine::Event &e) override;
-  virtual void OnAttach() override;
-  virtual void OnUpdate() override;
-  virtual void OnDetach() override;
+  void OnEvent(FloraEngine::Event &e) override;
+
+  void OnAttach() override;
+  void OnUpdate() override;
+  void OnDetach() override;
 
   bool OnKeyPressed(FloraEngine::KeyPressedEvent &e);
 };
