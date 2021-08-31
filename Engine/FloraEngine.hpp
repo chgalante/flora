@@ -1,4 +1,5 @@
 #pragma once
+#include "Flora/Base.hpp"
 #include "Flora/EntryPoint.hpp"
 #include "Flora/Utilities/Log.hpp"
 
@@ -8,4 +9,5 @@
 
 #include "Flora/Application/Application.hpp"
 #include "Flora/Application/ApplicationLayer.hpp"
+#include "Flora/Application/Event/InputEvent.hpp"
 #include "Flora/Application/Event/WindowEvent.hpp"

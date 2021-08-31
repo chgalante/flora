@@ -1,4 +1,5 @@
 #include "Flora/Application/Window.hpp"
+#include "Event/InputEvent.hpp"
 #include "Event/WindowEvent.hpp"
 #include "Flora/Application/Application.hpp"
 #include "Flora/Base.hpp"
@@ -58,8 +59,33 @@ bool Window::Init() {
   glfwSetKeyCallback(
       mWindow,
       [](GLFWwindow *window, int key, int scancode, int action, int mods) {
-
+        if (GLFW_PRESS == action || GLFW_REPEAT == action) {
+          auto event = CreateScope<KeyPressedEvent>(key, scancode, mods);
+          Application::Get().OnEvent(*event);
+        } else if (GLFW_RELEASE == action) {
+          auto event = CreateScope<KeyReleasedEvent>(key, scancode, mods);
+          Application::Get().OnEvent(*event);
+        }
       });
+
+  glfwSetMouseButtonCallback(
+      mWindow,
+      [](GLFWwindow *window, int button, int action, int mods) {
+        if (GLFW_PRESS == action) {
+          auto event = CreateScope<MouseButtonPressedEvent>(button, mods);
+          Application::Get().OnEvent(*event);
+        } else if (GLFW_RELEASE == action) {
+          auto event = CreateScope<MouseButtonReleasedEvent>(button, mods);
+          Application::Get().OnEvent(*event);
+        }
+      });
+
+  glfwSetCursorPosCallback(mWindow,
+                           [](GLFWwindow *window, double xpos, double ypos) {
+                             auto event =
+                                 CreateScope<MouseMovedEvent>(xpos, ypos);
+                             Application::Get().OnEvent(*event);
+                           });
 
   return true;
 }

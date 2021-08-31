@@ -10,4 +10,6 @@ public:
   virtual void OnAttach() override;
   virtual void OnUpdate() override;
   virtual void OnDetach() override;
+
+  bool OnKeyPressed(FloraEngine::KeyPressedEvent &e);
 };

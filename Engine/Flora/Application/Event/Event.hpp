@@ -69,22 +69,23 @@ inline std::ostream &operator<<(std::ostream &os, const Event &e) {
 }
 
 class EventDispatcher {
-  using EventFn = std::function<bool()>;
+
+  template <typename T> using EventFn = std::function<bool(T &)>;
 
 public:
-  EventDispatcher(Event &e) : mEvent(&e){};
+  EventDispatcher(Event &e) : mEvent(e){};
 
-  inline void Dispatch(EventType type, EventFn callback) {
-    if (mEvent->IsHandled())
+  template <typename T> void Dispatch(EventFn<T> callback) {
+    if (mEvent.IsHandled())
       return;
 
-    if (type == mEvent->GetEventType()) {
-      mEvent->mIsHandled = callback();
+    if (T::GetStaticType() == mEvent.GetEventType()) {
+      mEvent.mIsHandled = callback(static_cast<T &>(mEvent));
     }
   }
 
 private:
-  Event *mEvent;
+  Event &mEvent;
 };
 
 } // namespace FloraEngine

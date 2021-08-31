@@ -21,29 +21,16 @@ void DebugLayer::OnDetach() {
 }
 
 void DebugLayer::OnEvent(FloraEngine::Event &e) {
-  FloraEngine::EventDispatcher e_dispatcher = FloraEngine::EventDispatcher(e);
+  FloraEngine::EventDispatcher dispatcher = FloraEngine::EventDispatcher(e);
 
-  /* WindowClosedEvent */
-  e_dispatcher.Dispatch(FloraEngine::EventType::WindowClosedEvent, [&e]() {
-    FE_TRACE(e.ToString());
-    return true;
-  });
+  /* DEBUG PRINT */
+  FE_TRACE(e.ToString());
 
-  /* WindowResizedEvent */
-  e_dispatcher.Dispatch(FloraEngine::EventType::WindowResizedEvent, [&e]() {
-    FE_TRACE(e.ToString());
-    return true;
-  });
+  /* KeyPressedEvent */
+  dispatcher.Dispatch<FloraEngine::KeyPressedEvent>(
+      FE_BIND_EVENT_FN(DebugLayer::OnKeyPressed));
+}
 
-  /* WindowMovedEvent */
-  e_dispatcher.Dispatch(FloraEngine::EventType::WindowMovedEvent, [&e]() {
-    FE_TRACE(e.ToString());
-    return true;
-  });
-
-  /* WindowLostFocusEvent */
-  e_dispatcher.Dispatch(FloraEngine::EventType::WindowLostFocusEvent, [&e]() {
-    FE_TRACE(e.ToString());
-    return true;
-  });
+bool DebugLayer::OnKeyPressed(FloraEngine::KeyPressedEvent &e) {
+  return true;
 }

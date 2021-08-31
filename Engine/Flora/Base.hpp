@@ -18,6 +18,11 @@
 
 #define BIT(x) (1 << x)
 
+#define FE_BIND_EVENT_FN(fn)                                \
+  [this](auto &&...args) -> decltype(auto) {                \
+    return this->fn(std::forward<decltype(args)>(args)...); \
+  }
+
 namespace FloraEngine {
 // FloraEngine::Ref
 template <typename T> using Ref = std::shared_ptr<T>;
