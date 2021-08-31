@@ -9,22 +9,35 @@ namespace FloraEngine {
 
 bool Window::Init() {
 
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  int nbr_attribs, version_major, version_minor;
 
+  /* Initialize GLFW and Create a Window */
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   GLenum err = glfwInit();
   mWindow    = glfwCreateWindow(1280, 720, "FloraEngine", NULL, NULL);
   if (!mWindow) {
     FE_CORE_CRITICAL("GLFW failed to create window");
   }
-
   glfwMakeContextCurrent(mWindow);
 
+  /* Initialize OpenGL Context*/
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
     FE_CORE_CRITICAL("Failed to initialize OpenGL Context!");
   }
   glViewport(0, 0, 640, 480);
+
+  /* Log OpenGL context info */
+  glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nbr_attribs);
+  glGetIntegerv(GL_MAJOR_VERSION, &version_major);
+  glGetIntegerv(GL_MINOR_VERSION, &version_minor);
+  FE_CORE_TRACE("Initialized OpenGL Context version {0}.{1}",
+                version_major,
+                version_minor);
+  FE_CORE_TRACE("Maximum number of vertex attributes: {0}", nbr_attribs);
+
+  /* Route events to the application */
 
   /* WindowClosedEvent */
   glfwSetWindowCloseCallback(mWindow, [](GLFWwindow *window) {
@@ -56,6 +69,7 @@ bool Window::Init() {
     }
   });
 
+  /* KeyPressedEvent & KeyReleasedEvent */
   glfwSetKeyCallback(
       mWindow,
       [](GLFWwindow *window, int key, int scancode, int action, int mods) {
@@ -68,6 +82,7 @@ bool Window::Init() {
         }
       });
 
+  /* MouseButtonPressedEvent & MouseButtonReleasedEvent*/
   glfwSetMouseButtonCallback(
       mWindow,
       [](GLFWwindow *window, int button, int action, int mods) {
@@ -80,6 +95,7 @@ bool Window::Init() {
         }
       });
 
+  /* MouseMovedEvent */
   glfwSetCursorPosCallback(mWindow,
                            [](GLFWwindow *window, double xpos, double ypos) {
                              auto event =
