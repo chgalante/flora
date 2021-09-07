@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Core/Types.hpp"
 #include "pch.h"
 
 namespace FloraEngine {
@@ -8,9 +8,9 @@ public:
   Mesh() {}
   ~Mesh() {}
 
-  float mVertices[9] =
-      {-0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 0.0f};
-  unsigned int VBO;
-  unsigned int VAO;
+  void LoadOBJ(const std::string &path);
+
+private:
+  std::vector<Vertex> mVertices;
 };
 } // namespace FloraEngine

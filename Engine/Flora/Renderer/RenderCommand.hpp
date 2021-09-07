@@ -10,6 +10,6 @@ public:
   RenderCommand() {}
   ~RenderCommand() {}
 
-  static void DrawIndices(Mesh *mesh, Shader *shader);
+  static void DrawIndices();
 };
 } // namespace FloraEngine

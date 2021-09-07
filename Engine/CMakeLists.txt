@@ -28,6 +28,9 @@ add_library(FloraEngine STATIC
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Events/WindowEvent.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Events/InputEvent.cpp"
 
+  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Scene/Scene.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Scene/Entity.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Scene/Transform.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Scene/Camera.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Scene/Mesh.cpp"
 
