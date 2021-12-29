@@ -2,23 +2,20 @@
 
 #include "pch.h"
 
-// GLAD
-#include <glad/glad.h>
-// GLFW
-#include <GLFW/glfw3.h>
-
 namespace FloraEngine {
 
 class Window {
 
 public:
   Window();
-  ~Window(){};
+  ~Window();
 
   bool OnUpdate();
 
 private:
-  GLFWwindow *pWindow;
+  GLFWwindow *   mGLFWWindow;
+  const uint32_t WIDTH  = 800;
+  const uint32_t HEIGHT = 600;
 };
 
 } // namespace FloraEngine

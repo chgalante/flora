@@ -5,21 +5,28 @@
 #include "Flora/Utilities/Log.hpp"
 #include "pch.h"
 
+#define GLFW_INCLUDE_VULKAN
+
 extern FloraEngine::Application *FloraEngine::CreateApplication();
 
 int main(int argc, char **argv) {
 
   FloraEngine::Log::Init();
 
-  /* Start FloraEngine */
-  FE_CORE_INFO("FloraEngine Started!");
-
   /* Create Application */
   FloraEngine::Application *pApp = FloraEngine::CreateApplication();
 
-  /* Start Application Core */
-  pApp->Run();
+  try {
+    /* Start FloraEngine */
+    FE_CORE_INFO("Starting FloraEngine...");
+
+    /* Start Application Core */
+    pApp->Run();
+  } catch (const std::exception &e) {
+    std::cerr << e.what() << std::endl;
+    return EXIT_FAILURE;
+  }
 
   /* Exit Application */
-  return 0;
+  return EXIT_SUCCESS;
 }

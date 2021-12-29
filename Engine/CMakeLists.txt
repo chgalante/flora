@@ -47,12 +47,13 @@ target_include_directories(FloraEngine
 )
 
 # Find packages
-find_package(OpenGL REQUIRED)
+# find_package(OpenGL REQUIRED)
+find_package(Vulkan REQUIRED FATAL_ERROR)
 
 # link libraries
 target_link_libraries(FloraEngine
   glfw
-  OpenGL::GL
+  Vulkan::Vulkan
 )
 
 

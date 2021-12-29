@@ -11,7 +11,7 @@ class Application {
 
 public:
   Application();
-  ~Application() {}
+  ~Application();
 
   void Run();
   bool IsRunning();
@@ -26,9 +26,10 @@ public:
 private:
   Scope<std::vector<ApplicationLayer *>> mLayers;
   Scope<Window>                          mWindow;
-
-  bool     mIsRunning = false;
-  uint32_t mLayerInsertIndex;
+  bool                                   mIsRunning = false;
+  uint32_t                               mLayerInsertIndex;
+  /* Vulkan */
+  VkInstance mVkInstance;
 };
 
 /* To be defined by client */
