@@ -46,7 +46,6 @@ public:
 };
 
 Garden::Garden() : Application() {
-  FE_TRACE("Garden App Started!");
   PushLayer(new RenderLayer());
   PushOverlay(new UILayer());
 }

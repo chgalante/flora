@@ -11,14 +11,13 @@ extern FloraEngine::Application *FloraEngine::CreateApplication();
 
 int main(int argc, char **argv) {
 
-  FloraEngine::Log::Init();
-
-  /* Create Application */
-  FloraEngine::Application *pApp = FloraEngine::CreateApplication();
-
   try {
     /* Start FloraEngine */
-    FE_CORE_INFO("Starting FloraEngine...");
+    FloraEngine::Log::Init();
+    FE_CORE_TRACE("Starting FloraEngine...");
+
+    /* Create Application */
+    FloraEngine::Application *pApp = FloraEngine::CreateApplication();
 
     /* Start Application Core */
     pApp->Run();

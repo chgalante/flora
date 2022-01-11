@@ -2,6 +2,12 @@
 
 #include <memory>
 
+/* FloraEngine Info */
+#define FE_NAME          "FloraEngine"
+#define FE_NAME_SHORT    "flora"
+#define FE_VERSION_MAJOR 0
+#define FE_VERSION_MINOR 1
+
 #if defined(FE_DEBUG)
 
 #if (FE_PLATFORM_WINDOWS)
@@ -19,12 +25,14 @@
 namespace FloraEngine {
 // FloraEngine::Ref
 template <typename T> using Ref = std::shared_ptr<T>;
-template <typename T, typename... Args> constexpr Ref<T> CreateRef(Args &&...args) {
+template <typename T, typename... Args>
+constexpr Ref<T> CreateRef(Args &&...args) {
   return std::make_shared<T>(std::forward<Args>(args)...);
 }
 // FloraEngine::Ref
 template <typename T> using Scope = std::unique_ptr<T>;
-template <typename T, typename... Args> constexpr Scope<T> CreateScope(Args &&...args) {
+template <typename T, typename... Args>
+constexpr Scope<T> CreateScope(Args &&...args) {
   return std::make_unique<T>(std::forward<Args>(args)...);
 }
 

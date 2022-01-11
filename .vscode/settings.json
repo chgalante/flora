@@ -5,4 +5,5 @@
     "files.associations": {
         "memory": "cpp"
     },
+    "debug.terminal.clearBeforeReusing": true
 }

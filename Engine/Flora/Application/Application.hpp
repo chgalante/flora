@@ -2,6 +2,7 @@
 
 #include "ApplicationLayer.hpp"
 #include "Flora/Base.hpp"
+#include "Flora/Renderer/GraphicsContext.hpp"
 #include "Window.hpp"
 #include "pch.h"
 
@@ -26,10 +27,9 @@ public:
 private:
   Scope<std::vector<ApplicationLayer *>> mLayers;
   Scope<Window>                          mWindow;
+  Scope<GraphicsContext>                 mGraphicsContext;
   bool                                   mIsRunning = false;
   uint32_t                               mLayerInsertIndex;
-  /* Vulkan */
-  VkInstance mVkInstance;
 };
 
 /* To be defined by client */
