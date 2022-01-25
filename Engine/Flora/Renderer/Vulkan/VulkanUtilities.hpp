@@ -1,19 +1,25 @@
+#pragma once
+/* INCLUDES */
+#include "VulkanTypes.hpp"
 #include "pch.h"
 
-/* Function Prototypes */
-
-std::vector<const char *> GetRequiredExtensions();
+/* PUBLIC FUNCTION PROTOTYPES */
+std::vector<const char *> GetInstanceExtensions();
+std::vector<const char *> GetDeviceExtensions(VkPhysicalDevice &);
+VkPhysicalDevice          GetPhysicalDevice(VkInstance &);
+QueueFamilyIndices        GetQueueFamilies(VkPhysicalDevice device);
 
 bool CheckValidationLayerSupport(
     const std::vector<const char *> validationLayers);
-bool CheckExtensionSupport(std::vector<const char *> requiredExtensions);
+bool CheckInstanceExtensionSupport(
+    std::vector<const char *> requiredExtensions);
 
 #ifdef FE_DEBUG
 VkResult CreateDebugUtilsMessengerEXT(
     VkInstance                                instance,
     const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
-    const VkAllocationCallbacks *             pAllocator,
-    VkDebugUtilsMessengerEXT *                pDebugMessenger);
+    const VkAllocationCallbacks              *pAllocator,
+    VkDebugUtilsMessengerEXT                 *pDebugMessenger);
 
 void DestroyDebugUtilsMessengerEXT(VkInstance                   instance,
                                    VkDebugUtilsMessengerEXT     debugMessenger,

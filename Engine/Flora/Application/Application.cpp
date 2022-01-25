@@ -18,8 +18,8 @@ void Application::Run() {
   mWindow = CreateScope<Window>();
 
   /* Init Graphics Context */
-  mGraphicsContext = CreateScope<GraphicsContext>();
-  mGraphicsContext->Init();
+  mRendererContext = CreateScope<RendererContext>();
+  mRendererContext->Init();
 
   /* Attach each of the application layers */
   for (int32_t idx = mLayers->size() - 1; idx >= 0; idx--) {

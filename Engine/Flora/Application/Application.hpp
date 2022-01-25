@@ -2,7 +2,7 @@
 
 #include "ApplicationLayer.hpp"
 #include "Flora/Base.hpp"
-#include "Flora/Renderer/GraphicsContext.hpp"
+#include "Flora/Renderer/RendererContext.hpp"
 #include "Window.hpp"
 #include "pch.h"
 
@@ -27,7 +27,7 @@ public:
 private:
   Scope<std::vector<ApplicationLayer *>> mLayers;
   Scope<Window>                          mWindow;
-  Scope<GraphicsContext>                 mGraphicsContext;
+  Scope<RendererContext>                 mRendererContext;
   bool                                   mIsRunning = false;
   uint32_t                               mLayerInsertIndex;
 };
