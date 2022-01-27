@@ -84,7 +84,7 @@ static void populateDeviceCreateInfo(
 
 namespace FloraEngine {
 
-RendererContext::RendererContext() {}
+RendererContext::RendererContext(Ref<Window> window) : mWindow(window) {}
 
 void RendererContext::Init() {
   std::vector<const char *> instanceExtensions;
@@ -134,6 +134,14 @@ void RendererContext::Init() {
     throw std::runtime_error("failed to create vulkan instance!");
   }
 
+  /* Create surface */
+  if (glfwCreateWindowSurface(mInstance,
+                              mWindow->GetHandle(),
+                              nullptr,
+                              &mSurface) != VK_SUCCESS) {
+    throw std::runtime_error("failed to create window surface!");
+  }
+
 #ifdef FE_DEBUG
 
   if (CreateDebugUtilsMessengerEXT(mInstance,
@@ -145,13 +153,13 @@ void RendererContext::Init() {
 #endif
 
   /* Select a physical device */
-  mPhysicalDevice = GetPhysicalDevice(mInstance);
+  mPhysicalDevice = GetPhysicalDevice(mInstance, mSurface);
 
   /* Get Device Extensions */
   deviceExtensions = GetDeviceExtensions(mPhysicalDevice);
 
   /* Create logical device(s) */
-  mQueueFamilyIndices = GetQueueFamilies(mPhysicalDevice);
+  mQueueFamilyIndices = GetQueueFamilies(mPhysicalDevice, mSurface);
   populateQueueCreateInfo(queueCreateInfo, mQueueFamilyIndices, 1.0f);
   populateDeviceCreateInfo(deviceCreateInfo,
                            &queueCreateInfo,
@@ -176,6 +184,7 @@ void RendererContext::Cleanup() {
   DestroyDebugUtilsMessengerEXT(mInstance, mDebugMessenger, nullptr);
 #endif
   vkDestroyDevice(mLogicalDevice, nullptr);
+  vkDestroySurfaceKHR(mInstance, mSurface, nullptr);
   vkDestroyInstance(mInstance, nullptr);
 }
 

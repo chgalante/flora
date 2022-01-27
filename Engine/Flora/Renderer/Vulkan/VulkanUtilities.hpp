@@ -6,8 +6,8 @@
 /* PUBLIC FUNCTION PROTOTYPES */
 std::vector<const char *> GetInstanceExtensions();
 std::vector<const char *> GetDeviceExtensions(VkPhysicalDevice &);
-VkPhysicalDevice          GetPhysicalDevice(VkInstance &);
-QueueFamilyIndices        GetQueueFamilies(VkPhysicalDevice device);
+VkPhysicalDevice          GetPhysicalDevice(VkInstance &, VkSurfaceKHR);
+QueueFamilyIndices        GetQueueFamilies(VkPhysicalDevice, VkSurfaceKHR);
 
 bool CheckValidationLayerSupport(
     const std::vector<const char *> validationLayers);

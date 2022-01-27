@@ -1,5 +1,4 @@
 #pragma once
-
 #include "pch.h"
 
 namespace FloraEngine {
@@ -12,8 +11,12 @@ public:
 
   bool OnUpdate();
 
+  inline GLFWwindow *GetHandle() {
+    return mGLFWwindow;
+  }
+
 private:
-  GLFWwindow *   mGLFWWindow;
+  GLFWwindow    *mGLFWwindow;
   const uint32_t WIDTH  = 800;
   const uint32_t HEIGHT = 600;
 };

@@ -8,6 +8,10 @@
 #define FE_VERSION_MAJOR 0
 #define FE_VERSION_MINOR 1
 
+#ifndef FE_OPENGL_API
+#define GLFW_INCLUDE_VULKAN
+#endif
+
 #if defined(FE_DEBUG)
 
 #if (FE_PLATFORM_WINDOWS)

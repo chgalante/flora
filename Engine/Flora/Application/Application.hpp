@@ -26,7 +26,7 @@ public:
 
 private:
   Scope<std::vector<ApplicationLayer *>> mLayers;
-  Scope<Window>                          mWindow;
+  Ref<Window>                            mWindow;
   Scope<RendererContext>                 mRendererContext;
   bool                                   mIsRunning = false;
   uint32_t                               mLayerInsertIndex;

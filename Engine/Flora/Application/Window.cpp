@@ -10,11 +10,11 @@ Window::Window() {
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
   glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-  mGLFWWindow = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
+  mGLFWwindow = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
 }
 
 Window::~Window() {
-  glfwDestroyWindow(mGLFWWindow);
+  glfwDestroyWindow(mGLFWwindow);
   glfwTerminate();
 }
 
@@ -22,7 +22,7 @@ bool Window::OnUpdate() {
   glfwPollEvents();
 
   /* Returns false if the window should close to signal app termination */
-  return !glfwWindowShouldClose(mGLFWWindow);
+  return !glfwWindowShouldClose(mGLFWwindow);
 }
 
 } // namespace FloraEngine

@@ -2,7 +2,7 @@
 #include "VulkanUtilities.hpp"
 
 /* STATIC FUNCTIONS */
-static bool isDeviceSuitable(VkPhysicalDevice device) {
+static bool isDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface) {
   VkPhysicalDeviceProperties deviceProperties;
   VkPhysicalDeviceFeatures   deviceFeatures;
   QueueFamilyIndices         queueFamilyIndices;
@@ -10,7 +10,7 @@ static bool isDeviceSuitable(VkPhysicalDevice device) {
   vkGetPhysicalDeviceProperties(device, &deviceProperties);
   vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
 
-  queueFamilyIndices = GetQueueFamilies(device);
+  queueFamilyIndices = GetQueueFamilies(device, surface);
 
   /* TODO: prefer discrete over integrate GPU, for now any device with the
    * VK_QUEUE_GRAPHICS_BIT is chosen.
@@ -86,7 +86,7 @@ std::vector<const char *> GetDeviceExtensions(VkPhysicalDevice &device) {
   return extensions;
 }
 
-VkPhysicalDevice GetPhysicalDevice(VkInstance &instance) {
+VkPhysicalDevice GetPhysicalDevice(VkInstance &instance, VkSurfaceKHR surface) {
   uint32_t                      deviceCount = 0;
   std::vector<VkPhysicalDevice> devices;
 
@@ -102,7 +102,7 @@ VkPhysicalDevice GetPhysicalDevice(VkInstance &instance) {
 
   /* Check each device's suitability */
   for (const auto &device : devices) {
-    if (isDeviceSuitable(device)) {
+    if (isDeviceSuitable(device, surface)) {
       return device;
     }
   }
@@ -111,7 +111,8 @@ VkPhysicalDevice GetPhysicalDevice(VkInstance &instance) {
   throw std::runtime_error("failed to find a suitable GPU!");
 }
 
-QueueFamilyIndices GetQueueFamilies(VkPhysicalDevice device) {
+QueueFamilyIndices GetQueueFamilies(VkPhysicalDevice device,
+                                    VkSurfaceKHR     surface) {
   QueueFamilyIndices                   indices;
   uint32_t                             queueFamilyCount = 0;
   std::vector<VkQueueFamilyProperties> queueFamilies;
@@ -125,6 +126,11 @@ QueueFamilyIndices GetQueueFamilies(VkPhysicalDevice device) {
 
   int i = 0;
   for (const auto &queueFamily : queueFamilies) {
+    VkBool32 presentSupport = false;
+    vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
+    if (presentSupport) {
+      indices.presentFamily = i;
+    }
     if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
       indices.graphicsFamily = i;
     }

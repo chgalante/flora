@@ -15,10 +15,10 @@ Application::Application() {
 void Application::Run() {
 
   /* Init Application Window */
-  mWindow = CreateScope<Window>();
+  mWindow = CreateRef<Window>();
 
   /* Init Graphics Context */
-  mRendererContext = CreateScope<RendererContext>();
+  mRendererContext = CreateScope<RendererContext>(mWindow);
   mRendererContext->Init();
 
   /* Attach each of the application layers */
