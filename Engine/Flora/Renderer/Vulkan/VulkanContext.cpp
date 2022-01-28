@@ -58,24 +58,30 @@ static void populateInstanceCreateInfo(
   createInfo.pNext                   = nullptr;
 }
 
-static void populateQueueCreateInfo(VkDeviceQueueCreateInfo  &createInfo,
-                                    const QueueFamilyIndices &indices,
-                                    float                     queuePriority) {
-  createInfo.sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-  createInfo.queueFamilyIndex = indices.graphicsFamily.value();
-  createInfo.queueCount       = 1;
-  createInfo.pQueuePriorities = &queuePriority;
+static void populateQueueCreateInfos(
+    std::vector<VkDeviceQueueCreateInfo> &createInfos,
+    const std::set<uint32_t>             &uniqueQueueFamilies,
+    float                                 queuePriority) {
+  for (uint32_t queueFamily : uniqueQueueFamilies) {
+    VkDeviceQueueCreateInfo createInfo{};
+    createInfo.sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+    createInfo.queueFamilyIndex = queueFamily;
+    createInfo.queueCount       = 1;
+    createInfo.pQueuePriorities = &queuePriority;
+    createInfos.push_back(createInfo);
+  }
 }
 
 static void populateDeviceCreateInfo(
-    VkDeviceCreateInfo              &createInfo,
-    VkDeviceQueueCreateInfo         *queueCreateInfo,
-    VkPhysicalDeviceFeatures        *deviceFeatures,
-    const std::vector<const char *> &deviceExtensions) {
-  createInfo.sType                   = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-  createInfo.pQueueCreateInfos       = queueCreateInfo;
-  createInfo.queueCreateInfoCount    = 1;
-  createInfo.pEnabledFeatures        = deviceFeatures;
+    VkDeviceCreateInfo                         &createInfo,
+    const std::vector<VkDeviceQueueCreateInfo> &queueCreateInfos,
+    VkPhysicalDeviceFeatures                   &deviceFeatures,
+    const std::vector<const char *>            &deviceExtensions) {
+  createInfo.sType             = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+  createInfo.pQueueCreateInfos = queueCreateInfos.data();
+  createInfo.queueCreateInfoCount =
+      static_cast<uint32_t>(queueCreateInfos.size());
+  createInfo.pEnabledFeatures        = &deviceFeatures;
   createInfo.enabledExtensionCount   = deviceExtensions.size();
   createInfo.ppEnabledExtensionNames = &deviceExtensions[0];
 }
@@ -87,20 +93,14 @@ namespace FloraEngine {
 RendererContext::RendererContext(Ref<Window> window) : mWindow(window) {}
 
 void RendererContext::Init() {
-  std::vector<const char *> instanceExtensions;
-  std::vector<const char *> deviceExtensions;
-  VkApplicationInfo         appInfo{};
-  VkInstanceCreateInfo      instanceCreateInfo{};
-  VkDeviceQueueCreateInfo   queueCreateInfo{};
-  VkPhysicalDeviceFeatures  deviceFeatures{};
-  VkDeviceCreateInfo        deviceCreateInfo{};
 
   /* Init Vulkan */
   FE_CORE_TRACE("Initializing Vulkan Instance...");
 
-  instanceExtensions = GetInstanceExtensions();
-
+  VkApplicationInfo appInfo{};
   populateApplicationInfo(appInfo, FE_NAME, FE_NAME);
+  VkInstanceCreateInfo      instanceCreateInfo{};
+  std::vector<const char *> instanceExtensions = GetInstanceExtensions();
   populateInstanceCreateInfo(instanceCreateInfo, &appInfo, instanceExtensions);
 
 #ifdef FE_DEBUG
@@ -156,14 +156,21 @@ void RendererContext::Init() {
   mPhysicalDevice = GetPhysicalDevice(mInstance, mSurface);
 
   /* Get Device Extensions */
-  deviceExtensions = GetDeviceExtensions(mPhysicalDevice);
+  std::vector<const char *> deviceExtensions =
+      GetDeviceExtensions(mPhysicalDevice);
 
-  /* Create logical device(s) */
+  /* Create logical device and device queues */
   mQueueFamilyIndices = GetQueueFamilies(mPhysicalDevice, mSurface);
-  populateQueueCreateInfo(queueCreateInfo, mQueueFamilyIndices, 1.0f);
+
+  std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+  VkDeviceCreateInfo                   deviceCreateInfo{};
+  std::set<uint32_t>                   uniqueQueueFamilies = {
+      mQueueFamilyIndices.graphicsFamily.value(),
+      mQueueFamilyIndices.presentFamily.value()};
+  populateQueueCreateInfos(queueCreateInfos, uniqueQueueFamilies, 1.0f);
   populateDeviceCreateInfo(deviceCreateInfo,
-                           &queueCreateInfo,
-                           &deviceFeatures,
+                           queueCreateInfos,
+                           mPhysicalDeviceFeatures,
                            deviceExtensions);
 
   if (vkCreateDevice(mPhysicalDevice,
@@ -173,10 +180,15 @@ void RendererContext::Init() {
     throw std::runtime_error("failed to create logical device!");
   }
 
+  /* Get device queue handles */
   vkGetDeviceQueue(mLogicalDevice,
                    mQueueFamilyIndices.graphicsFamily.value(),
                    0,
                    &mGraphicsQueue);
+  vkGetDeviceQueue(mLogicalDevice,
+                   mQueueFamilyIndices.presentFamily.value(),
+                   0,
+                   &mPresentQueue);
 }
 
 void RendererContext::Cleanup() {

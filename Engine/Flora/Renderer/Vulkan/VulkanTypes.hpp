@@ -9,6 +9,7 @@
 #define CTX_WINDOW                Ref<Window> mWindow;
 #define CTX_QUEUE_FAMILY_INDICES  QueueFamilyIndices mQueueFamilyIndices;
 #define CTX_PHYSICAL_DEVICE       VkPhysicalDevice mPhysicalDevice = VK_NULL_HANDLE;
+#define CTX_DEVICE_FEATURES       VkPhysicalDeviceFeatures mPhysicalDeviceFeatures{};
 #define CTX_LOGICAL_DEVICE        VkDevice mLogicalDevice;
 #define CTX_DEVICE_GRAPHICS_QUEUE VkQueue mGraphicsQueue;
 #define CTX_DEVICE_PRESENT_QUEUE  VkQueue mPresentQueue;
