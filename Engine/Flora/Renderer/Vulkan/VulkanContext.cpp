@@ -5,8 +5,12 @@
 #include "VulkanUtilities.hpp"
 #include "pch.h"
 
+namespace FloraEngine {
+
 /* STATIC FUNCTIONS */
-#ifdef FE_DEBUG
+
+/* Callback Functions */
+
 static VKAPI_ATTR VkBool32 VKAPI_CALL
 debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT      messageSeverity,
               VkDebugUtilsMessageTypeFlagsEXT             messageType,
@@ -17,168 +21,166 @@ debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT      messageSeverity,
 
   return VK_FALSE;
 }
-#endif
 
-static void populateDebugMessengerCreateInfo(
-    VkDebugUtilsMessengerCreateInfoEXT  &createInfo,
-    PFN_vkDebugUtilsMessengerCallbackEXT callback) {
-  createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-  createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
-                               VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-                               VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-  createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
-                           VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
-                           VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-  createInfo.pfnUserCallback = callback;
-  createInfo.pNext           = nullptr;
-};
+/* Initialization Functions */
 
-static void populateApplicationInfo(VkApplicationInfo &appInfo,
-                                    const std::string &appName,
-                                    const std::string &engineName) {
+static void initializeInstance(
+    VkInstance                      &instance,
+    const std::vector<const char *> &validationLayers,
+    VkDebugUtilsMessengerEXT        &debugMessenger) {
+
+  /* Create app info structure */
+  VkApplicationInfo appInfo{};
   appInfo.sType            = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-  appInfo.pApplicationName = appName.c_str();
+  appInfo.pApplicationName = FE_NAME;
   appInfo.applicationVersion =
       VK_MAKE_VERSION(FE_VERSION_MAJOR, 0, FE_VERSION_MINOR);
-  appInfo.pEngineName = engineName.c_str();
+  appInfo.pEngineName = FE_NAME;
   appInfo.engineVersion =
       VK_MAKE_VERSION(FE_VERSION_MAJOR, 0, FE_VERSION_MINOR);
   appInfo.apiVersion = VK_API_VERSION_1_0;
-}
 
-static void populateInstanceCreateInfo(
-    VkInstanceCreateInfo            &createInfo,
-    VkApplicationInfo               *appInfo,
-    const std::vector<const char *> &instanceExtensions) {
-  createInfo.sType                   = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-  createInfo.pApplicationInfo        = appInfo;
-  createInfo.enabledExtensionCount   = instanceExtensions.size();
-  createInfo.ppEnabledExtensionNames = &instanceExtensions[0];
-  createInfo.enabledLayerCount       = 0;
-  createInfo.pNext                   = nullptr;
-}
-
-static void populateQueueCreateInfos(
-    std::vector<VkDeviceQueueCreateInfo> &createInfos,
-    const std::set<uint32_t>             &uniqueQueueFamilies,
-    float                                 queuePriority) {
-  for (uint32_t queueFamily : uniqueQueueFamilies) {
-    VkDeviceQueueCreateInfo createInfo{};
-    createInfo.sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-    createInfo.queueFamilyIndex = queueFamily;
-    createInfo.queueCount       = 1;
-    createInfo.pQueuePriorities = &queuePriority;
-    createInfos.push_back(createInfo);
-  }
-}
-
-static void populateDeviceCreateInfo(
-    VkDeviceCreateInfo                         &createInfo,
-    const std::vector<VkDeviceQueueCreateInfo> &queueCreateInfos,
-    VkPhysicalDeviceFeatures                   &deviceFeatures,
-    const std::vector<const char *>            &deviceExtensions) {
-  createInfo.sType             = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-  createInfo.pQueueCreateInfos = queueCreateInfos.data();
-  createInfo.queueCreateInfoCount =
-      static_cast<uint32_t>(queueCreateInfos.size());
-  createInfo.pEnabledFeatures        = &deviceFeatures;
-  createInfo.enabledExtensionCount   = deviceExtensions.size();
-  createInfo.ppEnabledExtensionNames = &deviceExtensions[0];
-}
-
-/* METHOD IMPLEMENTATIONS */
-
-namespace FloraEngine {
-
-RendererContext::RendererContext(Ref<Window> window) : mWindow(window) {}
-
-void RendererContext::Init() {
-
-  /* Init Vulkan */
-  FE_CORE_TRACE("Initializing Vulkan Instance...");
-
-  VkApplicationInfo appInfo{};
-  populateApplicationInfo(appInfo, FE_NAME, FE_NAME);
+  /* Create instance create info and select instance extensions */
   VkInstanceCreateInfo      instanceCreateInfo{};
   std::vector<const char *> instanceExtensions = GetInstanceExtensions();
-  populateInstanceCreateInfo(instanceCreateInfo, &appInfo, instanceExtensions);
+  instanceCreateInfo.sType            = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+  instanceCreateInfo.pApplicationInfo = &appInfo;
+  instanceCreateInfo.enabledExtensionCount   = instanceExtensions.size();
+  instanceCreateInfo.ppEnabledExtensionNames = &instanceExtensions[0];
+  instanceCreateInfo.enabledLayerCount       = 0;
+  instanceCreateInfo.pNext                   = nullptr;
 
 #ifdef FE_DEBUG
+  /* Create debug messenger and add validation layers to the
+   * instance if compiled for debug */
   VkDebugUtilsMessengerCreateInfoEXT debugUtilsMessengerCreateInfo{};
-  populateDebugMessengerCreateInfo(debugUtilsMessengerCreateInfo,
-                                   debugCallback);
+  debugUtilsMessengerCreateInfo.sType =
+      VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+  debugUtilsMessengerCreateInfo.messageSeverity =
+      VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
+      VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
+      VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+  debugUtilsMessengerCreateInfo.messageType =
+      VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+      VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+      VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+  debugUtilsMessengerCreateInfo.pfnUserCallback = debugCallback;
+  debugUtilsMessengerCreateInfo.pNext           = nullptr;
 
-  /* If defined validation layers are supported, register those validation
-   * layers in instance create info
-   */
-  if (!CheckValidationLayerSupport(mValidationLayers)) {
+  /* Only register validation layers in the instance create info if the selected
+   * validation layers are supported */
+  if (!CheckValidationLayerSupport(validationLayers)) {
     throw std::runtime_error("validation layers requested, but not available!");
   }
   instanceCreateInfo.enabledLayerCount =
-      static_cast<uint32_t>(mValidationLayers.size());
-  instanceCreateInfo.ppEnabledLayerNames = mValidationLayers.data();
+      static_cast<uint32_t>(validationLayers.size());
+  instanceCreateInfo.ppEnabledLayerNames = validationLayers.data();
   instanceCreateInfo.pNext =
       (VkDebugUtilsMessengerCreateInfoEXT *)&debugUtilsMessengerCreateInfo;
 #endif
 
-  /* Check that the extensions required by flora are supported by the instance
-   */
+  /* Check that the instance extensions selected for flora would supported by
+   * the instance */
   if (!CheckInstanceExtensionSupport(instanceExtensions)) {
     throw std::runtime_error("one or more required extensions are not "
                              "supported by the vulkan instance!");
   }
 
-  /* Create vulkan instance from instance create info structure */
-  if (vkCreateInstance(&instanceCreateInfo, nullptr, &mInstance) !=
-      VK_SUCCESS) {
+  /* Create the vulkan instance */
+  if (vkCreateInstance(&instanceCreateInfo, nullptr, &instance) != VK_SUCCESS) {
     throw std::runtime_error("failed to create vulkan instance!");
   }
 
-  /* Create surface */
-  if (glfwCreateWindowSurface(mInstance,
-                              mWindow->GetHandle(),
-                              nullptr,
-                              &mSurface) != VK_SUCCESS) {
-    throw std::runtime_error("failed to create window surface!");
-  }
-
 #ifdef FE_DEBUG
-
-  if (CreateDebugUtilsMessengerEXT(mInstance,
+  /* Create the debug messenger */
+  if (CreateDebugUtilsMessengerEXT(instance,
                                    &debugUtilsMessengerCreateInfo,
                                    nullptr,
-                                   &mDebugMessenger) != VK_SUCCESS) {
+                                   &debugMessenger) != VK_SUCCESS) {
     throw std::runtime_error("failed to set up debug messenger!");
   }
 #endif
+}
 
-  /* Select a physical device */
-  mPhysicalDevice = GetPhysicalDevice(mInstance, mSurface);
+static void initializeSurface(VkInstance   &instance,
+                              Ref<Window>  &window,
+                              VkSurfaceKHR &surface) {
+  /* Create a surface */
+  if (glfwCreateWindowSurface(instance,
+                              window->GetHandle(),
+                              nullptr,
+                              &surface) != VK_SUCCESS) {
+    throw std::runtime_error("failed to create window surface!");
+  }
+}
 
-  /* Get Device Extensions */
+static void initializeDevice(VkInstance               &instance,
+                             VkSurfaceKHR             &surface,
+                             VkPhysicalDevice         &physicalDevice,
+                             QueueFamilyIndices       &queueFamilyIndices,
+                             VkPhysicalDeviceFeatures &physicalDeviceFeatures,
+                             VkDevice                 &logicalDevice) {
+  /* Select a physical device and device extensions */
+  physicalDevice = GetPhysicalDevice(instance, surface);
   std::vector<const char *> deviceExtensions =
-      GetDeviceExtensions(mPhysicalDevice);
+      GetDeviceExtensions(physicalDevice);
 
   /* Create logical device and device queues */
-  mQueueFamilyIndices = GetQueueFamilies(mPhysicalDevice, mSurface);
+  queueFamilyIndices = GetQueueFamilies(physicalDevice, surface);
 
-  std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-  VkDeviceCreateInfo                   deviceCreateInfo{};
+  std::vector<VkDeviceQueueCreateInfo> deviceQueueCreateInfos;
   std::set<uint32_t>                   uniqueQueueFamilies = {
-      mQueueFamilyIndices.graphicsFamily.value(),
-      mQueueFamilyIndices.presentFamily.value()};
-  populateQueueCreateInfos(queueCreateInfos, uniqueQueueFamilies, 1.0f);
-  populateDeviceCreateInfo(deviceCreateInfo,
-                           queueCreateInfos,
-                           mPhysicalDeviceFeatures,
-                           deviceExtensions);
+      queueFamilyIndices.graphicsFamily.value(),
+      queueFamilyIndices.presentFamily.value()};
+  float queuePriority = 1.0f;
+  for (uint32_t queueFamily : uniqueQueueFamilies) {
+    VkDeviceQueueCreateInfo deviceQueueCreateInfo{};
+    deviceQueueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+    deviceQueueCreateInfo.queueFamilyIndex = queueFamily;
+    deviceQueueCreateInfo.queueCount       = 1;
+    deviceQueueCreateInfo.pQueuePriorities = &queuePriority;
+    deviceQueueCreateInfos.push_back(deviceQueueCreateInfo);
+  }
 
-  if (vkCreateDevice(mPhysicalDevice,
+  VkDeviceCreateInfo deviceCreateInfo{};
+  deviceCreateInfo.sType             = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+  deviceCreateInfo.pQueueCreateInfos = deviceQueueCreateInfos.data();
+  deviceCreateInfo.queueCreateInfoCount =
+      static_cast<uint32_t>(deviceQueueCreateInfos.size());
+  deviceCreateInfo.pEnabledFeatures        = &physicalDeviceFeatures;
+  deviceCreateInfo.enabledExtensionCount   = deviceExtensions.size();
+  deviceCreateInfo.ppEnabledExtensionNames = &deviceExtensions[0];
+
+  if (vkCreateDevice(physicalDevice,
                      &deviceCreateInfo,
                      nullptr,
-                     &mLogicalDevice) != VK_SUCCESS) {
+                     &logicalDevice) != VK_SUCCESS) {
     throw std::runtime_error("failed to create logical device!");
   }
+}
+
+/* METHOD IMPLEMENTATIONS */
+
+RendererContext::RendererContext(Ref<Window> window) : mWindow(window) {}
+
+void RendererContext::Init() {
+
+  /* Begin Vulkan renderer context initialization */
+  FE_CORE_TRACE("Initializing Vulkan Instance...");
+
+  /* Initialize instance */
+  initializeInstance(mInstance, mValidationLayers, mDebugMessenger);
+
+  /* Initialize surface */
+  initializeSurface(mInstance, mWindow, mSurface);
+
+  /* Initialize device and device queues */
+  initializeDevice(mInstance,
+                   mSurface,
+                   mPhysicalDevice,
+                   mQueueFamilyIndices,
+                   mPhysicalDeviceFeatures,
+                   mLogicalDevice);
 
   /* Get device queue handles */
   vkGetDeviceQueue(mLogicalDevice,
