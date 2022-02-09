@@ -2,7 +2,7 @@
 
 #include "ApplicationLayer.hpp"
 #include "Flora/Base.hpp"
-#include "Flora/Renderer/RendererContext.hpp"
+#include "Flora/Vulkan/VulkanContext.hpp"
 #include "Window.hpp"
 #include "pch.h"
 
@@ -26,8 +26,8 @@ public:
 
 private:
   Scope<std::vector<ApplicationLayer *>> mLayers;
-  Ref<Window>                            mWindow;
-  Scope<RendererContext>                 mRendererContext;
+  Scope<Window>                          mWindow;
+  Scope<VulkanContext>                   mVulkanContext;
   bool                                   mIsRunning = false;
   uint32_t                               mLayerInsertIndex;
 };

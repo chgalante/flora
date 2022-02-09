@@ -1,9 +1,9 @@
 {
     "editor.tabSize": 2,
     "editor.formatOnSave": true,
-    "editor.fontFamily": "Hack Nerd Font Mono",
     "files.associations": {
-        "memory": "cpp"
+        "memory": "cpp",
+        "vector": "cpp"
     },
     "debug.terminal.clearBeforeReusing": true
 }

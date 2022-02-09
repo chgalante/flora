@@ -10,25 +10,20 @@ set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
+# Configuration Defines
+#set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DFE_DEBUG")
+
 # Platform Defines
 if (WIN32)
   set(FE_PLATFORM_WINDOWS 1)
-  set(GFX_CONTEXT_SOURCES 
-  )
 endif (WIN32)
 
 if (UNIX AND NOT APPLE)
   set(FE_PLATFORM_UNIX 1)
-  set(GFX_CONTEXT_SOURCES 
-  )
 endif (UNIX AND NOT APPLE)
 
 if (APPLE)
   set(FE_PLATFORM_APPLE 1)
-  set(GFX_CONTEXT_SOURCES 
-  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Renderer/Vulkan/VulkanContext.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Renderer/Vulkan/VulkanUtilities.cpp"
-  )
 endif (APPLE)
 
 # Add subdirectories
@@ -42,7 +37,9 @@ add_library(FloraEngine STATIC
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Application/ApplicationLayer.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Application/Window.cpp"
 
-  "${GFX_CONTEXT_SOURCES}"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Vulkan/VulkanContext.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Vulkan/VulkanInstance.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Vulkan/VulkanDevice.cpp"
 
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Render/RenderCommand.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Render/Shader.cpp"
@@ -68,7 +65,6 @@ target_include_directories(FloraEngine
 )
 
 # Find packages
-# find_package(OpenGL REQUIRED)
 find_package(Vulkan REQUIRED FATAL_ERROR)
 
 # link libraries
@@ -77,8 +73,3 @@ target_link_libraries(FloraEngine
   Vulkan::Vulkan
   Vulkan::Headers
 )
-
-
-
-# Configuration Defines
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DFE_DEBUG")
