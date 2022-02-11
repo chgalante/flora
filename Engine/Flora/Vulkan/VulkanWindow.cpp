@@ -1,10 +1,10 @@
-#include "Window.hpp"
+#include "VulkanWindow.hpp"
 #include "Flora/Base.hpp"
 #include "Flora/Utilities/Log.hpp"
 
 namespace FloraEngine {
 
-Window::Window() {
+VulkanWindow::VulkanWindow() {
   glfwInit();
 
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -13,12 +13,12 @@ Window::Window() {
   mGLFWwindow = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
 }
 
-Window::~Window() {
+VulkanWindow::~VulkanWindow() {
   glfwDestroyWindow(mGLFWwindow);
   glfwTerminate();
 }
 
-bool Window::OnUpdate() {
+bool VulkanWindow::OnUpdate() {
   glfwPollEvents();
 
   /* Returns false if the window should close to signal app termination */

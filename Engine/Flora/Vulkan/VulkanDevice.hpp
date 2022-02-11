@@ -1,4 +1,7 @@
+#pragma once
 #include "pch.h"
+
+#include "Flora/Vulkan/VulkanInstance.hpp"
 
 #define VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME "VK_KHR_portability_subset"
 
@@ -21,7 +24,7 @@ struct SwapChainSupportDetails {
 
 class VulkanDevice {
 public:
-  VulkanDevice(VkInstance *, VkSurfaceKHR *);
+  VulkanDevice(VulkanInstance *);
   ~VulkanDevice();
 
   void Init();
@@ -29,14 +32,17 @@ public:
   void UpdateQueueFamilies();
   void UpdateSwapChainSupportDetails();
 
+  SwapChainSupportDetails GetSwapChainSupportDetails();
+  QueueFamilyIndices      GetQueueFamilyIndices();
+  VkDevice                GetDevice();
+
 private:
   bool isCurrentDeviceSuitable();
   bool checkDeviceExtensionSupport();
   bool checkSwapChainSupport();
 
 private:
-  VkInstance   *pInstanceHandle;
-  VkSurfaceKHR *pSurfaceHandle;
+  VulkanInstance *pVulkanInstanceHandle;
 
   VkPhysicalDevice           mPhysicalDevice = VK_NULL_HANDLE;
   VkDevice                   mLogicalDevice  = VK_NULL_HANDLE;

@@ -5,5 +5,5 @@
         "memory": "cpp",
         "vector": "cpp"
     },
-    "debug.terminal.clearBeforeReusing": true
+    "debug.terminal.clearBeforeReusing": true,
 }

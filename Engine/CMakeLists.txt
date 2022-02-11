@@ -11,7 +11,7 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 # Configuration Defines
-#set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DFE_DEBUG")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DFE_DEBUG")
 
 # Platform Defines
 if (WIN32)
@@ -35,11 +35,12 @@ add_library(FloraEngine STATIC
 
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Application/Application.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Application/ApplicationLayer.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Application/Window.cpp"
 
+  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Vulkan/VulkanWindow.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Vulkan/VulkanContext.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Vulkan/VulkanInstance.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Vulkan/VulkanDevice.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Vulkan/VulkanSwapChain.cpp"
 
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Render/RenderCommand.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Render/Shader.cpp"

@@ -2,8 +2,8 @@
 
 namespace FloraEngine {
 
-VulkanDevice::VulkanDevice(VkInstance *instance, VkSurfaceKHR *surface)
-    : pInstanceHandle(instance), pSurfaceHandle(surface) {}
+VulkanDevice::VulkanDevice(VulkanInstance *instance)
+    : pVulkanInstanceHandle(instance) {}
 
 VulkanDevice::~VulkanDevice() {
   vkDestroyDevice(mLogicalDevice, nullptr);
@@ -88,7 +88,7 @@ void VulkanDevice::UpdateQueueFamilies() {
     VkBool32 presentSupport = false;
     vkGetPhysicalDeviceSurfaceSupportKHR(mPhysicalDevice,
                                          i,
-                                         *pSurfaceHandle,
+                                         pVulkanInstanceHandle->GetSurface(),
                                          &presentSupport);
     if (presentSupport) {
       indices.presentFamily = i;
@@ -108,7 +108,9 @@ void VulkanDevice::UpdateQueueFamilies() {
 void VulkanDevice::UpdatePhysicalDevice() {
 
   uint32_t deviceCount = 0;
-  vkEnumeratePhysicalDevices(*pInstanceHandle, &deviceCount, nullptr);
+  vkEnumeratePhysicalDevices(pVulkanInstanceHandle->GetInstance(),
+                             &deviceCount,
+                             nullptr);
 
   if (deviceCount == 0) {
     throw std::runtime_error("failed to find GPUs with Vulkan support!");
@@ -117,7 +119,9 @@ void VulkanDevice::UpdatePhysicalDevice() {
    * physical devices */
   std::vector<VkPhysicalDevice> devices =
       std::vector<VkPhysicalDevice>(deviceCount);
-  vkEnumeratePhysicalDevices(*pInstanceHandle, &deviceCount, devices.data());
+  vkEnumeratePhysicalDevices(pVulkanInstanceHandle->GetInstance(),
+                             &deviceCount,
+                             devices.data());
 
   /* Check each device's suitability */
   for (const auto &device : devices) {
@@ -131,6 +135,47 @@ void VulkanDevice::UpdatePhysicalDevice() {
 
   /* If we reach here, a suitable device was not found */
   throw std::runtime_error("failed to find a suitable GPU!");
+}
+
+void VulkanDevice::UpdateSwapChainSupportDetails() {
+
+  if (mPhysicalDevice == VK_NULL_HANDLE) {
+    std::runtime_error(
+        "VulkanDevice::mPhysicalDevice should have been initialized!");
+  }
+
+  vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
+      mPhysicalDevice,
+      pVulkanInstanceHandle->GetSurface(),
+      &mSwapChainSupportDetails.capabilities);
+
+  uint32_t formatCount;
+  vkGetPhysicalDeviceSurfaceFormatsKHR(mPhysicalDevice,
+                                       pVulkanInstanceHandle->GetSurface(),
+                                       &formatCount,
+                                       nullptr);
+  if (formatCount != 0) {
+    mSwapChainSupportDetails.formats.resize(formatCount);
+    vkGetPhysicalDeviceSurfaceFormatsKHR(
+        mPhysicalDevice,
+        pVulkanInstanceHandle->GetSurface(),
+        &formatCount,
+        mSwapChainSupportDetails.formats.data());
+  }
+
+  uint32_t presentModeCount;
+  vkGetPhysicalDeviceSurfacePresentModesKHR(mPhysicalDevice,
+                                            pVulkanInstanceHandle->GetSurface(),
+                                            &presentModeCount,
+                                            nullptr);
+  if (presentModeCount != 0) {
+    mSwapChainSupportDetails.presentModes.resize(presentModeCount);
+    vkGetPhysicalDeviceSurfacePresentModesKHR(
+        mPhysicalDevice,
+        pVulkanInstanceHandle->GetSurface(),
+        &presentModeCount,
+        mSwapChainSupportDetails.presentModes.data());
+  }
 }
 
 bool VulkanDevice::checkDeviceExtensionSupport() {
@@ -174,45 +219,16 @@ bool VulkanDevice::checkSwapChainSupport() {
          !mSwapChainSupportDetails.presentModes.empty();
 }
 
-void VulkanDevice::UpdateSwapChainSupportDetails() {
+SwapChainSupportDetails VulkanDevice::GetSwapChainSupportDetails() {
+  return mSwapChainSupportDetails;
+}
 
-  if (mPhysicalDevice == VK_NULL_HANDLE) {
-    std::runtime_error(
-        "VulkanDevice::mPhysicalDevice should have been initialized!");
-  }
+QueueFamilyIndices VulkanDevice::GetQueueFamilyIndices() {
+  return mQueueFamilyIndices;
+}
 
-  vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
-      mPhysicalDevice,
-      *pSurfaceHandle,
-      &mSwapChainSupportDetails.capabilities);
-
-  uint32_t formatCount;
-  vkGetPhysicalDeviceSurfaceFormatsKHR(mPhysicalDevice,
-                                       *pSurfaceHandle,
-                                       &formatCount,
-                                       nullptr);
-  if (formatCount != 0) {
-    mSwapChainSupportDetails.formats.resize(formatCount);
-    vkGetPhysicalDeviceSurfaceFormatsKHR(
-        mPhysicalDevice,
-        *pSurfaceHandle,
-        &formatCount,
-        mSwapChainSupportDetails.formats.data());
-  }
-
-  uint32_t presentModeCount;
-  vkGetPhysicalDeviceSurfacePresentModesKHR(mPhysicalDevice,
-                                            *pSurfaceHandle,
-                                            &presentModeCount,
-                                            nullptr);
-  if (presentModeCount != 0) {
-    mSwapChainSupportDetails.presentModes.resize(presentModeCount);
-    vkGetPhysicalDeviceSurfacePresentModesKHR(
-        mPhysicalDevice,
-        *pSurfaceHandle,
-        &presentModeCount,
-        mSwapChainSupportDetails.presentModes.data());
-  }
+VkDevice VulkanDevice::GetDevice() {
+  return mLogicalDevice;
 }
 
 } // namespace FloraEngine

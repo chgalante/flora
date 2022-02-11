@@ -3,7 +3,7 @@
 #include "ApplicationLayer.hpp"
 #include "Flora/Base.hpp"
 #include "Flora/Vulkan/VulkanContext.hpp"
-#include "Window.hpp"
+#include "Flora/Vulkan/VulkanWindow.hpp"
 #include "pch.h"
 
 namespace FloraEngine {
@@ -26,7 +26,7 @@ public:
 
 private:
   Scope<std::vector<ApplicationLayer *>> mLayers;
-  Scope<Window>                          mWindow;
+  Scope<VulkanWindow>                    mVulkanWindow;
   Scope<VulkanContext>                   mVulkanContext;
   bool                                   mIsRunning = false;
   uint32_t                               mLayerInsertIndex;

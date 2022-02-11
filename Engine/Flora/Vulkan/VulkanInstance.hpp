@@ -1,25 +1,27 @@
 #pragma once
 
-#include "Flora/Application/Window.hpp"
+#include "Flora/Vulkan/VulkanWindow.hpp"
 
 namespace FloraEngine {
 class VulkanInstance {
 public:
-  VulkanInstance(Window *);
+  VulkanInstance(VulkanWindow *);
   ~VulkanInstance();
 
-  void          Init();
-  void          GetInstanceExtensions();
-  VkInstance   *GetVkInstanceHandle();
-  VkSurfaceKHR *GetVkSurfaceKHRHandle();
+  void         Init();
+  void         GetInstanceExtensions();
+  VkInstance   GetInstance();
+  VkSurfaceKHR GetSurface();
 
 private:
   bool checkInstanceExtensionSupport();
 
 private:
-  Window                   *pWindow;
-  VkInstance                mInstance;
-  VkSurfaceKHR              mSurface;
+  VulkanWindow *pWindow;
+
+  VkInstance   mInstance;
+  VkSurfaceKHR mSurface;
+
   std::vector<const char *> mInstanceExtensions{
       "VK_KHR_get_physical_device_properties2"};
 

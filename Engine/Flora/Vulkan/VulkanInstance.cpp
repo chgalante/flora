@@ -3,7 +3,7 @@
 
 namespace FloraEngine {
 
-VulkanInstance::VulkanInstance(Window *window) : pWindow(window) {}
+VulkanInstance::VulkanInstance(VulkanWindow *window) : pWindow(window) {}
 
 VulkanInstance::~VulkanInstance() {
 #ifdef FE_DEBUG
@@ -23,12 +23,12 @@ debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT      messageSeverity,
   return VK_FALSE;
 }
 
-VkInstance *VulkanInstance::GetVkInstanceHandle() {
-  return &mInstance;
+VkInstance VulkanInstance::GetInstance() {
+  return mInstance;
 }
 
-VkSurfaceKHR *VulkanInstance::GetVkSurfaceKHRHandle() {
-  return &mSurface;
+VkSurfaceKHR VulkanInstance::GetSurface() {
+  return mSurface;
 }
 
 void VulkanInstance::Init() {
@@ -105,7 +105,7 @@ void VulkanInstance::Init() {
 
   /* Create a surface */
   if (glfwCreateWindowSurface(mInstance,
-                              pWindow->GetHandle(),
+                              pWindow->GetGLFWHandle(),
                               nullptr,
                               &mSurface) != VK_SUCCESS) {
     throw std::runtime_error("failed to create window surface!");

@@ -3,16 +3,24 @@
 
 namespace FloraEngine {
 
-class Window {
+class VulkanWindow {
 
 public:
-  Window();
-  ~Window();
+  VulkanWindow();
+  ~VulkanWindow();
 
   bool OnUpdate();
 
-  inline GLFWwindow *GetHandle() {
+  inline GLFWwindow *GetGLFWHandle() {
     return mGLFWwindow;
+  }
+
+  inline const uint32_t GetWidth() {
+    return WIDTH;
+  }
+
+  inline const uint32_t GetHeight() {
+    return HEIGHT;
   }
 
 private:

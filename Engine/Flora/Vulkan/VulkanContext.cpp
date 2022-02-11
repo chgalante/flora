@@ -4,7 +4,7 @@
 
 namespace FloraEngine {
 
-VulkanContext::VulkanContext(Window *window) : pWindow(window) {}
+VulkanContext::VulkanContext(VulkanWindow *window) : pWindow(window) {}
 
 VulkanContext::~VulkanContext() {}
 
@@ -18,10 +18,13 @@ void VulkanContext::Init() {
   mVulkanInstance->Init();
 
   /* Initialize device */
-  mVulkanDevice =
-      CreateScope<VulkanDevice>(mVulkanInstance.get()->GetVkInstanceHandle(),
-                                mVulkanInstance.get()->GetVkSurfaceKHRHandle());
+  mVulkanDevice = CreateScope<VulkanDevice>(mVulkanInstance.get());
   mVulkanDevice->Init();
+
+  /* Initialize swap chain */
+  mVulkanSwapChain = CreateScope<VulkanSwapChain>(mVulkanInstance.get(),
+                                                  pWindow,
+                                                  mVulkanDevice.get());
 }
 
 } // namespace FloraEngine

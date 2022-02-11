@@ -15,10 +15,10 @@ Application::Application() {
 void Application::Run() {
 
   /* Init Application Window */
-  mWindow = CreateScope<Window>();
+  mVulkanWindow = CreateScope<VulkanWindow>();
 
   /* Init Graphics Context */
-  mVulkanContext = CreateScope<VulkanContext>(mWindow.get());
+  mVulkanContext = CreateScope<VulkanContext>(mVulkanWindow.get());
   mVulkanContext->Init();
 
   /* Attach each of the application layers */
@@ -29,7 +29,7 @@ void Application::Run() {
   /* App Core */
   while (Application::IsRunning()) {
     /* Exit from application core loop when the window should close */
-    if (!mWindow->OnUpdate()) {
+    if (!mVulkanWindow->OnUpdate()) {
       mIsRunning = false;
       break;
     }
