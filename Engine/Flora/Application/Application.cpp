@@ -14,12 +14,11 @@ Application::Application() {
 
 void Application::Run() {
 
-  /* Init Application Window */
-  mVulkanWindow = CreateScope<VulkanWindow>();
-
   /* Init Graphics Context */
-  mVulkanContext = CreateScope<VulkanContext>(mVulkanWindow.get());
+  mVulkanContext = CreateScope<VulkanContext>();
   mVulkanContext->Init();
+
+  VulkanWindow *pVulkanWindow = mVulkanContext->GetWindow();
 
   /* Attach each of the application layers */
   for (int32_t idx = mLayers->size() - 1; idx >= 0; idx--) {
@@ -29,7 +28,7 @@ void Application::Run() {
   /* App Core */
   while (Application::IsRunning()) {
     /* Exit from application core loop when the window should close */
-    if (!mVulkanWindow->OnUpdate()) {
+    if (!pVulkanWindow->OnUpdate()) {
       mIsRunning = false;
       break;
     }
@@ -58,17 +57,17 @@ void Application::Run() {
  * last overlay.
  */
 
-void Application::PushLayer(ApplicationLayer *application_layer) {
+void Application::PushLayer(ApplicationLayer *layer) {
 
   /* Push layer on layer stack */
-  mLayers->emplace(mLayers->begin() + mLayerInsertIndex, application_layer);
+  mLayers->emplace(mLayers->begin() + mLayerInsertIndex, layer);
   mLayerInsertIndex++;
 }
 
-void Application::PushOverlay(ApplicationLayer *application_overlay) {
+void Application::PushOverlay(ApplicationLayer *overlay) {
 
   /* Push overlay on top of overlay stack */
-  mLayers->emplace_back(application_overlay);
+  mLayers->emplace_back(overlay);
 }
 
 bool Application::IsRunning() {

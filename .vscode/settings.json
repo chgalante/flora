@@ -1,9 +1,9 @@
 {
     "editor.tabSize": 2,
-    "editor.formatOnSave": true,
     "files.associations": {
         "memory": "cpp",
         "vector": "cpp"
     },
     "debug.terminal.clearBeforeReusing": true,
+    "editor.formatOnSave": true,
 }

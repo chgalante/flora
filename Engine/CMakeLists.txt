@@ -20,14 +20,17 @@ endif (WIN32)
 
 if (UNIX AND NOT APPLE)
   set(FE_PLATFORM_UNIX 1)
+  set(FE_PLATFORM_LINUX 1)
 endif (UNIX AND NOT APPLE)
 
 if (APPLE)
+  set(FE_PLATFORM_UNIX 1)
   set(FE_PLATFORM_APPLE 1)
 endif (APPLE)
 
 # Add subdirectories
 add_subdirectory(vendor/glfw)
+add_subdirectory(vendor/glslang)
 
 # FloraEngine Static Library
 add_library(FloraEngine STATIC
@@ -41,13 +44,13 @@ add_library(FloraEngine STATIC
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Vulkan/VulkanInstance.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Vulkan/VulkanDevice.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Vulkan/VulkanSwapChain.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Vulkan/VulkanImageViews.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Vulkan/VulkanGraphicsPipeline.cpp"
 
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Render/RenderCommand.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Render/Shader.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Render/Camera.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Render/Mesh.cpp"
-
-  "${CMAKE_CURRENT_SOURCE_DIR}/vendor/glad/src/glad.c"
 )
 
 target_precompile_headers(FloraEngine PRIVATE
@@ -61,8 +64,8 @@ target_include_directories(FloraEngine
   PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/"
   PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/vendor/glfw/include/"
   PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/vendor/spdlog/include/"
-  PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/vendor/glad/include/"
   PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/vendor/glm/"
+  PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/vendor/glslang/glslang/Public/"
 )
 
 # Find packages
@@ -70,7 +73,8 @@ find_package(Vulkan REQUIRED FATAL_ERROR)
 
 # link libraries
 target_link_libraries(FloraEngine
-  glfw
   Vulkan::Vulkan
   Vulkan::Headers
+  glfw
+  glslang
 )

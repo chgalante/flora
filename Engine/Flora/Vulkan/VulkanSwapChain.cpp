@@ -8,7 +8,9 @@ VulkanSwapChain::VulkanSwapChain(VulkanInstance *instance,
     : pVulkanInstanceHandle(instance), pVulkanWindowHandle(window),
       pVulkanDeviceHandle(device) {}
 
-VulkanSwapChain::~VulkanSwapChain() {
+VulkanSwapChain::~VulkanSwapChain() {}
+
+void VulkanSwapChain::Cleanup() {
   vkDestroySwapchainKHR(pVulkanDeviceHandle->GetDevice(), mSwapChain, nullptr);
 }
 
@@ -19,9 +21,9 @@ void VulkanSwapChain::Init() {
   QueueFamilyIndices queueFamilyIndices =
       pVulkanDeviceHandle->GetQueueFamilyIndices();
 
-  UpdateSurfaceFormat();
-  UpdatePresentMode();
-  UpdateExtent2D();
+  update_surface_format();
+  update_present_mode();
+  update_extent_2d();
 
   uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
   if (swapChainSupport.capabilities.maxImageCount > 0 &&
@@ -62,10 +64,10 @@ void VulkanSwapChain::Init() {
     throw std::runtime_error("failed to create swap chain!");
   }
 
-  UpdateSwapChainImageHandles();
+  update_swap_chain_image_handles();
 }
 
-void VulkanSwapChain::UpdateSurfaceFormat() {
+void VulkanSwapChain::update_surface_format() {
   SwapChainSupportDetails swapChainSupport =
       pVulkanDeviceHandle->GetSwapChainSupportDetails();
   for (const auto &availableFormat : swapChainSupport.formats) {
@@ -79,7 +81,7 @@ void VulkanSwapChain::UpdateSurfaceFormat() {
   mSurfaceFormat = swapChainSupport.formats[0];
 }
 
-void VulkanSwapChain::UpdatePresentMode() {
+void VulkanSwapChain::update_present_mode() {
   SwapChainSupportDetails swapChainSupport =
       pVulkanDeviceHandle->GetSwapChainSupportDetails();
   for (const auto &availablePresentMode : swapChainSupport.presentModes) {
@@ -92,7 +94,7 @@ void VulkanSwapChain::UpdatePresentMode() {
   mPresentMode = VK_PRESENT_MODE_FIFO_KHR;
 }
 
-void VulkanSwapChain::UpdateExtent2D() {
+void VulkanSwapChain::update_extent_2d() {
   SwapChainSupportDetails swapChainSupport =
       pVulkanDeviceHandle->GetSwapChainSupportDetails();
   if (swapChainSupport.capabilities.currentExtent.width != UINT32_MAX) {
@@ -111,7 +113,7 @@ void VulkanSwapChain::UpdateExtent2D() {
   }
 }
 
-void VulkanSwapChain::UpdateSwapChainImageHandles() {
+void VulkanSwapChain::update_swap_chain_image_handles() {
   uint32_t imageCount;
   vkGetSwapchainImagesKHR(pVulkanDeviceHandle->GetDevice(),
                           mSwapChain,
@@ -132,7 +134,7 @@ std::vector<VkImage> VulkanSwapChain::GetSwapChainImages() {
   return mSwapChainImages;
 }
 
-VkFormat VulkanSwapChain::GetSwapChainFormat() {
+VkFormat VulkanSwapChain::GetSwapChainImageFormat() {
   return mSurfaceFormat.format;
 }
 

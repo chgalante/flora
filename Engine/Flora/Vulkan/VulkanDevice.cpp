@@ -5,24 +5,26 @@ namespace FloraEngine {
 VulkanDevice::VulkanDevice(VulkanInstance *instance)
     : pVulkanInstanceHandle(instance) {}
 
-VulkanDevice::~VulkanDevice() {
-  vkDestroyDevice(mLogicalDevice, nullptr);
-}
+VulkanDevice::~VulkanDevice() {}
 
-bool VulkanDevice::isCurrentDeviceSuitable() {
+bool VulkanDevice::is_current_physical_device_suitable() {
 
-  UpdateQueueFamilies();
-  UpdateSwapChainSupportDetails();
+  update_queue_families();
+  update_swap_chain_support_details();
   /* TODO: prefer discrete over integrate GPU, for now any device with the
    * VK_QUEUE_GRAPHICS_BIT is chosen.
    */
-  return mQueueFamilyIndices.isComplete() && checkDeviceExtensionSupport() &&
-         checkSwapChainSupport();
+  return mQueueFamilyIndices.isComplete() && check_device_extension_support() &&
+         check_swap_chain_support();
+}
+
+void VulkanDevice::Cleanup() {
+  vkDestroyDevice(mLogicalDevice, nullptr);
 }
 
 void VulkanDevice::Init() {
   /* Update the physical device and device extensions */
-  UpdatePhysicalDevice();
+  update_current_physical_device();
 
   std::vector<VkDeviceQueueCreateInfo> deviceQueueCreateInfos;
   std::set<uint32_t>                   uniqueQueueFamilies = {
@@ -66,7 +68,7 @@ void VulkanDevice::Init() {
                    &mPresentQueue);
 }
 
-void VulkanDevice::UpdateQueueFamilies() {
+void VulkanDevice::update_queue_families() {
   if (mPhysicalDevice == VK_NULL_HANDLE) {
     std::runtime_error(
         "VulkanDevice::mPhysicalDevice should have been initialized!");
@@ -105,7 +107,7 @@ void VulkanDevice::UpdateQueueFamilies() {
   mQueueFamilyIndices = indices;
 }
 
-void VulkanDevice::UpdatePhysicalDevice() {
+void VulkanDevice::update_current_physical_device() {
 
   uint32_t deviceCount = 0;
   vkEnumeratePhysicalDevices(pVulkanInstanceHandle->GetInstance(),
@@ -128,7 +130,7 @@ void VulkanDevice::UpdatePhysicalDevice() {
     mPhysicalDevice = device;
     vkGetPhysicalDeviceProperties(device, &mPhysicalDeviceProperties);
     vkGetPhysicalDeviceFeatures(device, &mPhysicalDeviceFeatures);
-    if (isCurrentDeviceSuitable()) {
+    if (is_current_physical_device_suitable()) {
       return;
     }
   }
@@ -137,7 +139,7 @@ void VulkanDevice::UpdatePhysicalDevice() {
   throw std::runtime_error("failed to find a suitable GPU!");
 }
 
-void VulkanDevice::UpdateSwapChainSupportDetails() {
+void VulkanDevice::update_swap_chain_support_details() {
 
   if (mPhysicalDevice == VK_NULL_HANDLE) {
     std::runtime_error(
@@ -178,7 +180,7 @@ void VulkanDevice::UpdateSwapChainSupportDetails() {
   }
 }
 
-bool VulkanDevice::checkDeviceExtensionSupport() {
+bool VulkanDevice::check_device_extension_support() {
 
   FE_CORE_TRACE("Checking device extension support...");
 
@@ -214,7 +216,7 @@ bool VulkanDevice::checkDeviceExtensionSupport() {
   return bExtensionsAreSupported;
 }
 
-bool VulkanDevice::checkSwapChainSupport() {
+bool VulkanDevice::check_swap_chain_support() {
   return !mSwapChainSupportDetails.formats.empty() &&
          !mSwapChainSupportDetails.presentModes.empty();
 }

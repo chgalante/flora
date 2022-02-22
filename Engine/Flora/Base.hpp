@@ -8,22 +8,16 @@
 #define FE_VERSION_MAJOR 0
 #define FE_VERSION_MINOR 1
 
-#ifndef FE_OPENGL_API
 #define GLFW_INCLUDE_VULKAN
-#endif
 
 #if defined(FE_DEBUG)
-
 #if (FE_PLATFORM_WINDOWS)
 #define FE_DEBUGBREAK() __debugbreak()
 #endif /* FE_PLATFORM_WINDOWS */
-
 #if (FE_PLATFORM_UNIX)
 #define FE_DEBUGBREAK() raise(SIGTRAP)
 #endif /* FE_PLATFORM_WINDOWS */
-
 #define FE_ENABLE_ASSERTS
-
 #endif /* FE_DEBUG */
 
 namespace FloraEngine {
@@ -33,7 +27,7 @@ template <typename T, typename... Args>
 constexpr Ref<T> CreateRef(Args &&...args) {
   return std::make_shared<T>(std::forward<Args>(args)...);
 }
-// FloraEngine::Ref
+// FloraEngine::Scope
 template <typename T> using Scope = std::unique_ptr<T>;
 template <typename T, typename... Args>
 constexpr Scope<T> CreateScope(Args &&...args) {

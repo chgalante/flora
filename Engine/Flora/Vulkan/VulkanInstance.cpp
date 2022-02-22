@@ -5,12 +5,7 @@ namespace FloraEngine {
 
 VulkanInstance::VulkanInstance(VulkanWindow *window) : pWindow(window) {}
 
-VulkanInstance::~VulkanInstance() {
-#ifdef FE_DEBUG
-  DestroyDebugUtilsMessengerEXT(nullptr);
-#endif
-  vkDestroyInstance(mInstance, nullptr);
-}
+VulkanInstance::~VulkanInstance() {}
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL
 debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT      messageSeverity,
@@ -31,6 +26,13 @@ VkSurfaceKHR VulkanInstance::GetSurface() {
   return mSurface;
 }
 
+void VulkanInstance::Cleanup() {
+#ifdef FE_DEBUG
+  destroy_debug_utils_messenger(nullptr);
+#endif
+  vkDestroyInstance(mInstance, nullptr);
+}
+
 void VulkanInstance::Init() {
   /* Create app info structure */
   VkApplicationInfo appInfo{};
@@ -45,7 +47,7 @@ void VulkanInstance::Init() {
 
   /* Create instance create info and select instance extensions */
   VkInstanceCreateInfo instanceCreateInfo{};
-  GetInstanceExtensions();
+  update_instance_extensions();
   instanceCreateInfo.sType            = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
   instanceCreateInfo.pApplicationInfo = &appInfo;
   instanceCreateInfo.enabledExtensionCount   = mInstanceExtensions.size();
@@ -72,7 +74,7 @@ void VulkanInstance::Init() {
 
   /* Only register validation layers in the instance create info if the selected
    * validation layers are supported */
-  if (!checkValidationLayerSupport()) {
+  if (!check_validation_layer_support()) {
     throw std::runtime_error("validation layers requested, but not available!");
   }
   instanceCreateInfo.enabledLayerCount =
@@ -84,7 +86,7 @@ void VulkanInstance::Init() {
 
   /* Check that the instance extensions selected for flora would supported by
    * the instance */
-  if (!checkInstanceExtensionSupport()) {
+  if (!check_instance_extension_support()) {
     throw std::runtime_error("one or more required extensions are not "
                              "supported by the vulkan instance!");
   }
@@ -97,7 +99,7 @@ void VulkanInstance::Init() {
 
 #ifdef FE_DEBUG
   /* Create the debug messenger */
-  if (CreateDebugUtilsMessengerEXT(&debugUtilsMessengerCreateInfo, nullptr) !=
+  if (create_debug_utils_messenger(&debugUtilsMessengerCreateInfo, nullptr) !=
       VK_SUCCESS) {
     throw std::runtime_error("failed to set up debug messenger!");
   }
@@ -112,7 +114,7 @@ void VulkanInstance::Init() {
   }
 }
 
-void VulkanInstance::GetInstanceExtensions() {
+void VulkanInstance::update_instance_extensions() {
 
   /* Get list of required extensions for glfw */
   uint32_t     glfwExtensionCount = 0;
@@ -129,7 +131,7 @@ void VulkanInstance::GetInstanceExtensions() {
 #endif
 }
 
-bool VulkanInstance::checkInstanceExtensionSupport() {
+bool VulkanInstance::check_instance_extension_support() {
 
   /* Check that required extensions are supported */
   FE_CORE_TRACE("Checking instance extension support... ");
@@ -164,7 +166,7 @@ bool VulkanInstance::checkInstanceExtensionSupport() {
 }
 
 #ifdef FE_DEBUG
-bool VulkanInstance::checkValidationLayerSupport() {
+bool VulkanInstance::check_validation_layer_support() {
   uint32_t                       layerCount;
   std::vector<VkLayerProperties> availableLayers;
 
@@ -192,7 +194,7 @@ bool VulkanInstance::checkValidationLayerSupport() {
   return true;
 }
 
-VkResult VulkanInstance::CreateDebugUtilsMessengerEXT(
+VkResult VulkanInstance::create_debug_utils_messenger(
     const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
     const VkAllocationCallbacks              *pAllocator) {
   auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
@@ -205,7 +207,7 @@ VkResult VulkanInstance::CreateDebugUtilsMessengerEXT(
   }
 }
 
-void VulkanInstance::DestroyDebugUtilsMessengerEXT(
+void VulkanInstance::destroy_debug_utils_messenger(
     const VkAllocationCallbacks *pAllocator) {
   auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
       mInstance,

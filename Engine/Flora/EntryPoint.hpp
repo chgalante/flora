@@ -5,8 +5,6 @@
 #include "Flora/Utilities/Log.hpp"
 #include "pch.h"
 
-#define GLFW_INCLUDE_VULKAN
-
 extern FloraEngine::Application *FloraEngine::CreateApplication();
 
 int main(int argc, char **argv) {

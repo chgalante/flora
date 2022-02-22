@@ -17,8 +17,8 @@ public:
   void Run();
   bool IsRunning();
 
-  void PushLayer(ApplicationLayer *application_layer);
-  void PushOverlay(ApplicationLayer *application_overlay);
+  void PushLayer(ApplicationLayer *);
+  void PushOverlay(ApplicationLayer *);
 
   virtual void OnAttach() = 0;
   virtual void OnUpdate() = 0;

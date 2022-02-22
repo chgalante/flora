@@ -10,15 +10,18 @@ public:
   ~VulkanSwapChain();
 
   void Init();
-  void UpdateSurfaceFormat();
-  void UpdatePresentMode();
-  void UpdateExtent2D();
-  void UpdateSwapChainImageHandles();
+  void Cleanup();
 
   VkSwapchainKHR       GetSwapChain();
   std::vector<VkImage> GetSwapChainImages();
-  VkFormat             GetSwapChainFormat();
+  VkFormat             GetSwapChainImageFormat();
   VkExtent2D           GetSwapChainExtent2D();
+
+private:
+  void update_surface_format();
+  void update_present_mode();
+  void update_extent_2d();
+  void update_swap_chain_image_handles();
 
 private:
   VulkanInstance *pVulkanInstanceHandle;

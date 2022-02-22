@@ -9,12 +9,20 @@ public:
   ~VulkanInstance();
 
   void         Init();
-  void         GetInstanceExtensions();
+  void         Cleanup();
   VkInstance   GetInstance();
   VkSurfaceKHR GetSurface();
 
 private:
-  bool checkInstanceExtensionSupport();
+  void update_instance_extensions();
+  bool check_instance_extension_support();
+#ifdef FE_DEBUG
+  bool     check_validation_layer_support();
+  VkResult create_debug_utils_messenger(
+      const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
+      const VkAllocationCallbacks              *pAllocator);
+  void destroy_debug_utils_messenger(const VkAllocationCallbacks *pAllocator);
+#endif
 
 private:
   VulkanWindow *pWindow;
@@ -26,15 +34,6 @@ private:
       "VK_KHR_get_physical_device_properties2"};
 
 #ifdef FE_DEBUG
-private:
-  bool     checkValidationLayerSupport();
-  VkResult CreateDebugUtilsMessengerEXT(
-      const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
-      const VkAllocationCallbacks              *pAllocator);
-
-  void DestroyDebugUtilsMessengerEXT(const VkAllocationCallbacks *pAllocator);
-
-private:
   VkDebugUtilsMessengerEXT        mDebugMessenger;
   const std::vector<const char *> mValidationLayers = {
       "VK_LAYER_KHRONOS_validation"};

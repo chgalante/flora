@@ -28,18 +28,19 @@ public:
   ~VulkanDevice();
 
   void Init();
-  void UpdatePhysicalDevice();
-  void UpdateQueueFamilies();
-  void UpdateSwapChainSupportDetails();
+  void Cleanup();
 
   SwapChainSupportDetails GetSwapChainSupportDetails();
   QueueFamilyIndices      GetQueueFamilyIndices();
   VkDevice                GetDevice();
 
 private:
-  bool isCurrentDeviceSuitable();
-  bool checkDeviceExtensionSupport();
-  bool checkSwapChainSupport();
+  void update_current_physical_device();
+  void update_queue_families();
+  void update_swap_chain_support_details();
+  bool is_current_physical_device_suitable();
+  bool check_device_extension_support();
+  bool check_swap_chain_support();
 
 private:
   VulkanInstance *pVulkanInstanceHandle;

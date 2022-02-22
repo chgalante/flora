@@ -1,5 +1,7 @@
 #pragma once
 #include "Flora/Vulkan/VulkanDevice.hpp"
+#include "Flora/Vulkan/VulkanGraphicsPipeline.hpp"
+#include "Flora/Vulkan/VulkanImageViews.hpp"
 #include "Flora/Vulkan/VulkanInstance.hpp"
 #include "Flora/Vulkan/VulkanSwapChain.hpp"
 #include "Flora/Vulkan/VulkanWindow.hpp"
@@ -9,16 +11,19 @@ namespace FloraEngine {
 
 class VulkanContext {
 public:
-  VulkanContext(VulkanWindow *);
+  VulkanContext();
   ~VulkanContext();
 
   void Init();
 
-private:
-  VulkanWindow *pWindow;
+  VulkanWindow *GetWindow();
 
-  Scope<VulkanInstance>  mVulkanInstance;
-  Scope<VulkanDevice>    mVulkanDevice;
-  Scope<VulkanSwapChain> mVulkanSwapChain;
+private:
+  Scope<VulkanWindow>           mVulkanWindow;
+  Scope<VulkanInstance>         mVulkanInstance;
+  Scope<VulkanDevice>           mVulkanDevice;
+  Scope<VulkanSwapChain>        mVulkanSwapChain;
+  Scope<VulkanImageViews>       mVulkanImageViews;
+  Scope<VulkanGraphicsPipeline> mVulkanGraphicsPipeline;
 };
 } // namespace FloraEngine
