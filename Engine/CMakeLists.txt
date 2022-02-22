@@ -30,7 +30,6 @@ endif (APPLE)
 
 # Add subdirectories
 add_subdirectory(vendor/glfw)
-add_subdirectory(vendor/glslang)
 
 # FloraEngine Static Library
 add_library(FloraEngine STATIC
