@@ -1,24 +1,31 @@
 #pragma once
 #include "VulkanDevice.hpp"
+#include "VulkanSwapChain.hpp"
+#include "pch.h"
 
 namespace FloraEngine {
 class VulkanGraphicsPipeline {
 public:
-  VulkanGraphicsPipeline(VulkanDevice *);
+  VulkanGraphicsPipeline(VulkanDevice *, VulkanSwapChain *);
   ~VulkanGraphicsPipeline();
 
   void Init();
   void Cleanup();
 
-  void UpdateShaderModules();
+private:
+  void update_shader_modules();
+  void update_viewport();
+  void compile_glsl_to_spirv();
 
 private:
-  void CompileGLSLtoSPIRV();
+  VulkanDevice    *pVulkanDeviceHandle;
+  VulkanSwapChain *pVulkanSwapChainHandle;
 
-private:
-  VulkanDevice  *pVulkanDeviceHandle;
-  VkShaderModule mVertexShaderModule;
-  VkShaderModule mFragmentShaderModule;
+  VkShaderModule   mVertexShaderModule;
+  VkShaderModule   mFragmentShaderModule;
+  VkViewport       mViewport;
+  VkRect2D         mScissor;
+  VkPipelineLayout mLayout;
 };
 
 } // namespace FloraEngine

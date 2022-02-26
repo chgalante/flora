@@ -1,8 +1,9 @@
 #include "VulkanGraphicsPipeline.hpp"
 
 namespace FloraEngine {
-VulkanGraphicsPipeline::VulkanGraphicsPipeline(VulkanDevice *device)
-    : pVulkanDeviceHandle(device) {}
+VulkanGraphicsPipeline::VulkanGraphicsPipeline(VulkanDevice    *device,
+                                               VulkanSwapChain *swap_chain)
+    : pVulkanDeviceHandle(device), pVulkanSwapChainHandle(swap_chain) {}
 VulkanGraphicsPipeline::~VulkanGraphicsPipeline() {}
 
 static std::vector<char> readFile(const std::string &filename) {
@@ -23,9 +24,10 @@ static std::vector<char> readFile(const std::string &filename) {
 }
 
 void VulkanGraphicsPipeline::Init() {
-  UpdateShaderModules();
+  /* Update shader modules*/
+  update_shader_modules();
 
-  /* Create vertex shader stage */
+  /* vertex shader stage */
   VkPipelineShaderStageCreateInfo vertex_shader_stage_info{};
   vertex_shader_stage_info.sType =
       VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -33,7 +35,7 @@ void VulkanGraphicsPipeline::Init() {
   vertex_shader_stage_info.module = mVertexShaderModule;
   vertex_shader_stage_info.pName  = "main";
 
-  /* Create fragment shader stage */
+  /* fragment shader stage */
   VkPipelineShaderStageCreateInfo fragment_shader_stage_info{};
   fragment_shader_stage_info.sType =
       VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -41,9 +43,111 @@ void VulkanGraphicsPipeline::Init() {
   fragment_shader_stage_info.module = mFragmentShaderModule;
   fragment_shader_stage_info.pName  = "main";
 
+  /* shader stages */
   VkPipelineShaderStageCreateInfo shader_stages[] = {
       vertex_shader_stage_info,
       fragment_shader_stage_info};
+
+  /* vertex input state info */
+  VkPipelineVertexInputStateCreateInfo vertex_input_info{};
+  vertex_input_info.sType =
+      VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+  vertex_input_info.vertexBindingDescriptionCount   = 0;
+  vertex_input_info.pVertexBindingDescriptions      = nullptr; // Optional
+  vertex_input_info.vertexAttributeDescriptionCount = 0;
+  vertex_input_info.pVertexAttributeDescriptions    = nullptr; // Optional
+
+  /* input assembly state info */
+  VkPipelineInputAssemblyStateCreateInfo input_assembly_info{};
+  input_assembly_info.sType =
+      VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+  input_assembly_info.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+  input_assembly_info.primitiveRestartEnable = VK_FALSE;
+
+  /* Update viewport */
+  update_viewport();
+
+  /* viewport state info */
+  VkPipelineViewportStateCreateInfo viewport_state_info{};
+  viewport_state_info.sType =
+      VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+  viewport_state_info.viewportCount = 1;
+  viewport_state_info.pViewports    = &mViewport;
+  viewport_state_info.scissorCount  = 1;
+  viewport_state_info.pScissors     = &mScissor;
+
+  /* rasterization state info */
+  VkPipelineRasterizationStateCreateInfo rasterization_state_info{};
+  rasterization_state_info.sType =
+      VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+  rasterization_state_info.depthClampEnable        = VK_FALSE;
+  rasterization_state_info.rasterizerDiscardEnable = VK_FALSE;
+  rasterization_state_info.polygonMode             = VK_POLYGON_MODE_FILL;
+  rasterization_state_info.lineWidth               = 1.0f;
+  rasterization_state_info.cullMode                = VK_CULL_MODE_BACK_BIT;
+  rasterization_state_info.frontFace               = VK_FRONT_FACE_CLOCKWISE;
+  rasterization_state_info.depthBiasEnable         = VK_FALSE;
+  rasterization_state_info.depthBiasConstantFactor = 0.0f; // Optional
+  rasterization_state_info.depthBiasClamp          = 0.0f; // Optional
+  rasterization_state_info.depthBiasSlopeFactor    = 0.0f; // Optional
+
+  /* multisample state info
+   * Multisampling is disabled for now.
+   */
+  VkPipelineMultisampleStateCreateInfo multisample_state_info{};
+  multisample_state_info.sType =
+      VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+  multisample_state_info.sampleShadingEnable   = VK_FALSE;
+  multisample_state_info.rasterizationSamples  = VK_SAMPLE_COUNT_1_BIT;
+  multisample_state_info.minSampleShading      = 1.0f;     // Optional
+  multisample_state_info.pSampleMask           = nullptr;  // Optional
+  multisample_state_info.alphaToCoverageEnable = VK_FALSE; // Optional
+  multisample_state_info.alphaToOneEnable      = VK_FALSE; // Optional
+
+  /* color blend attachment state
+   * Color blending is disabled for now.
+   * Find all possible operations in the VkBlendFactor and VkBlendOp enums.
+   * It is possible to blend using bitwise combination (logicOpEnable, logicOp).
+   */
+  VkPipelineColorBlendAttachmentState color_blend_state_info{};
+  color_blend_state_info.colorWriteMask =
+      VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
+      VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+  color_blend_state_info.blendEnable         = VK_FALSE;
+  color_blend_state_info.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;  // Optional
+  color_blend_state_info.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
+  color_blend_state_info.colorBlendOp        = VK_BLEND_OP_ADD;      // Optional
+  color_blend_state_info.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;  // Optional
+  color_blend_state_info.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
+  color_blend_state_info.alphaBlendOp        = VK_BLEND_OP_ADD;      // Optional
+
+  /* choose dynamic states
+   * States that are dynamic must be specified at draw time.
+   * For these states, configuration values are ignored.
+   */
+  VkDynamicState dynamic_states[] = {VK_DYNAMIC_STATE_VIEWPORT,
+                                     VK_DYNAMIC_STATE_LINE_WIDTH};
+
+  VkPipelineDynamicStateCreateInfo dynamic_state_info{};
+  dynamic_state_info.sType =
+      VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+  dynamic_state_info.dynamicStateCount = 2;
+  dynamic_state_info.pDynamicStates    = dynamic_states;
+
+  /* pipeline layout */
+  VkPipelineLayoutCreateInfo layout_info{};
+  layout_info.sType          = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+  layout_info.setLayoutCount = 0;               // Optional
+  layout_info.pSetLayouts    = nullptr;         // Optional
+  layout_info.pushConstantRangeCount = 0;       // Optional
+  layout_info.pPushConstantRanges    = nullptr; // Optional
+
+  if (vkCreatePipelineLayout(pVulkanDeviceHandle->GetDevice(),
+                             &layout_info,
+                             nullptr,
+                             &mLayout) != VK_SUCCESS) {
+    throw std::runtime_error("failed to create pipeline layout!");
+  }
 }
 
 void VulkanGraphicsPipeline::Cleanup() {
@@ -53,13 +157,14 @@ void VulkanGraphicsPipeline::Cleanup() {
   vkDestroyShaderModule(pVulkanDeviceHandle->GetDevice(),
                         mFragmentShaderModule,
                         nullptr);
+  vkDestroyPipelineLayout(pVulkanDeviceHandle->GetDevice(), mLayout, nullptr);
 }
 
-void VulkanGraphicsPipeline::UpdateShaderModules() {
+void VulkanGraphicsPipeline::update_shader_modules() {
   // TODO: Destroy vulkan objects before recreating
-  CompileGLSLtoSPIRV();
-  auto vertex_shader_code   = readFile("./Engine/Shaders/vertex.spv");
-  auto fragment_shader_code = readFile("./Engine/Shaders/fragment.spv");
+  compile_glsl_to_spirv();
+  auto vertex_shader_code   = readFile("../Engine/Shaders/vertex.spv");
+  auto fragment_shader_code = readFile("../Engine/Shaders/fragment.spv");
 
   /* Create vertex shader module*/
   VkShaderModuleCreateInfo create_info{};
@@ -88,12 +193,28 @@ void VulkanGraphicsPipeline::UpdateShaderModules() {
   }
 }
 
-void VulkanGraphicsPipeline::CompileGLSLtoSPIRV() {
+void VulkanGraphicsPipeline::update_viewport() {
+  mViewport       = VkViewport{};
+  mViewport.x     = 0.0f;
+  mViewport.y     = 0.0f;
+  mViewport.width = (float)pVulkanSwapChainHandle->GetSwapChainExtent2D().width;
+  mViewport.height =
+      (float)pVulkanSwapChainHandle->GetSwapChainExtent2D().height;
+  mViewport.minDepth = 0.0f;
+  mViewport.maxDepth = 1.0f;
+
+  mScissor        = VkRect2D{};
+  mScissor.offset = {0, 0};
+  mScissor.extent = pVulkanSwapChainHandle->GetSwapChainExtent2D();
+}
+
+void VulkanGraphicsPipeline::compile_glsl_to_spirv() {
+  std::system("pwd");
   std::system("glslc "
-              "./Engine/Shaders/shader.vert "
-              "-o ./Engine/Shaders/vertex.spv");
+              "../Engine/Shaders/shader.vert "
+              "-o ../Engine/Shaders/vertex.spv");
   std::system("glslc "
-              "./Engine/Shaders/shader.frag "
-              "-o ./Engine/Shaders/fragment.spv");
+              "../Engine/Shaders/shader.frag "
+              "-o ../Engine/Shaders/fragment.spv");
 }
 } // namespace FloraEngine

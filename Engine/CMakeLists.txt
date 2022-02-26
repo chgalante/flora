@@ -75,5 +75,4 @@ target_link_libraries(FloraEngine
   Vulkan::Vulkan
   Vulkan::Headers
   glfw
-  glslang
 )

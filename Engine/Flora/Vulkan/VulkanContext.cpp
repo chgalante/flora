@@ -44,7 +44,9 @@ void VulkanContext::Init() {
   mVulkanImageViews->Init();
 
   /* Initialize graphics pipeline */
-  mVulkanGraphicsPipeline = CreateScope<VulkanGraphicsPipeline>();
+  mVulkanGraphicsPipeline =
+      CreateScope<VulkanGraphicsPipeline>(mVulkanDevice.get(),
+                                          mVulkanSwapChain.get());
   mVulkanGraphicsPipeline->Init();
 }
 
