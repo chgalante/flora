@@ -24,8 +24,36 @@ static std::vector<char> readFile(const std::string &filename) {
 }
 
 void VulkanGraphicsPipeline::Init() {
-  /* Update shader modules*/
-  update_shader_modules();
+  /* Compile glsl shaders to spirv*/
+  compile_glsl_to_spirv();
+  auto vertex_shader_code   = readFile("../Engine/Shaders/vertex.spv");
+  auto fragment_shader_code = readFile("../Engine/Shaders/fragment.spv");
+
+  /* Create vertex shader module*/
+  VkShaderModuleCreateInfo create_info{};
+  create_info.sType    = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+  create_info.codeSize = vertex_shader_code.size();
+  create_info.pCode =
+      reinterpret_cast<const uint32_t *>(vertex_shader_code.data());
+
+  if (vkCreateShaderModule(pVulkanDeviceHandle->GetDevice(),
+                           &create_info,
+                           nullptr,
+                           &mVertexShaderModule) != VK_SUCCESS) {
+    throw std::runtime_error("failed to create vertex shader module!");
+  }
+
+  /* Create fragment shader module*/
+  create_info.codeSize = fragment_shader_code.size();
+  create_info.pCode =
+      reinterpret_cast<const uint32_t *>(fragment_shader_code.data());
+
+  if (vkCreateShaderModule(pVulkanDeviceHandle->GetDevice(),
+                           &create_info,
+                           nullptr,
+                           &mFragmentShaderModule) != VK_SUCCESS) {
+    throw std::runtime_error("failed to create fragment shader module!");
+  }
 
   /* vertex shader stage */
   VkPipelineShaderStageCreateInfo vertex_shader_stage_info{};
@@ -64,10 +92,20 @@ void VulkanGraphicsPipeline::Init() {
   input_assembly_info.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
   input_assembly_info.primitiveRestartEnable = VK_FALSE;
 
-  /* Update viewport */
-  update_viewport();
-
   /* viewport state info */
+  mViewport       = VkViewport{};
+  mViewport.x     = 0.0f;
+  mViewport.y     = 0.0f;
+  mViewport.width = (float)pVulkanSwapChainHandle->GetSwapChainExtent2D().width;
+  mViewport.height =
+      (float)pVulkanSwapChainHandle->GetSwapChainExtent2D().height;
+  mViewport.minDepth = 0.0f;
+  mViewport.maxDepth = 1.0f;
+
+  mScissor        = VkRect2D{};
+  mScissor.offset = {0, 0};
+  mScissor.extent = pVulkanSwapChainHandle->GetSwapChainExtent2D();
+
   VkPipelineViewportStateCreateInfo viewport_state_info{};
   viewport_state_info.sType =
       VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -109,17 +147,29 @@ void VulkanGraphicsPipeline::Init() {
    * Find all possible operations in the VkBlendFactor and VkBlendOp enums.
    * It is possible to blend using bitwise combination (logicOpEnable, logicOp).
    */
-  VkPipelineColorBlendAttachmentState color_blend_state_info{};
-  color_blend_state_info.colorWriteMask =
+  VkPipelineColorBlendAttachmentState color_blend_attachment{};
+  color_blend_attachment.colorWriteMask =
       VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
       VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-  color_blend_state_info.blendEnable         = VK_FALSE;
-  color_blend_state_info.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;  // Optional
-  color_blend_state_info.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
-  color_blend_state_info.colorBlendOp        = VK_BLEND_OP_ADD;      // Optional
-  color_blend_state_info.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;  // Optional
-  color_blend_state_info.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
-  color_blend_state_info.alphaBlendOp        = VK_BLEND_OP_ADD;      // Optional
+  color_blend_attachment.blendEnable         = VK_FALSE;
+  color_blend_attachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;  // Optional
+  color_blend_attachment.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
+  color_blend_attachment.colorBlendOp        = VK_BLEND_OP_ADD;      // Optional
+  color_blend_attachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;  // Optional
+  color_blend_attachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
+  color_blend_attachment.alphaBlendOp        = VK_BLEND_OP_ADD;      // Optional
+
+  VkPipelineColorBlendStateCreateInfo color_blend_state_info{};
+  color_blend_state_info.sType =
+      VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+  color_blend_state_info.logicOpEnable     = VK_FALSE;
+  color_blend_state_info.logicOp           = VK_LOGIC_OP_COPY; // Optional
+  color_blend_state_info.attachmentCount   = 1;
+  color_blend_state_info.pAttachments      = &color_blend_attachment;
+  color_blend_state_info.blendConstants[0] = 0.0f; // Optional
+  color_blend_state_info.blendConstants[1] = 0.0f; // Optional
+  color_blend_state_info.blendConstants[2] = 0.0f; // Optional
+  color_blend_state_info.blendConstants[3] = 0.0f; // Optional
 
   /* choose dynamic states
    * States that are dynamic must be specified at draw time.
@@ -148,6 +198,67 @@ void VulkanGraphicsPipeline::Init() {
                              &mLayout) != VK_SUCCESS) {
     throw std::runtime_error("failed to create pipeline layout!");
   }
+
+  /* render pass */
+  VkAttachmentDescription color_attachment{};
+  color_attachment.format  = pVulkanSwapChainHandle->GetSwapChainImageFormat();
+  color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
+  color_attachment.loadOp  = VK_ATTACHMENT_LOAD_OP_CLEAR;
+  color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+  color_attachment.stencilLoadOp  = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+  color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+  color_attachment.initialLayout  = VK_IMAGE_LAYOUT_UNDEFINED;
+  color_attachment.finalLayout    = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+  VkAttachmentReference color_attachment_ref{};
+  color_attachment_ref.attachment = 0;
+  color_attachment_ref.layout     = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+  VkSubpassDescription subpass{};
+  subpass.pipelineBindPoint    = VK_PIPELINE_BIND_POINT_GRAPHICS;
+  subpass.colorAttachmentCount = 1;
+  subpass.pColorAttachments    = &color_attachment_ref;
+
+  VkRenderPassCreateInfo render_pass_info{};
+  render_pass_info.sType           = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+  render_pass_info.attachmentCount = 1;
+  render_pass_info.pAttachments    = &color_attachment;
+  render_pass_info.subpassCount    = 1;
+  render_pass_info.pSubpasses      = &subpass;
+
+  if (vkCreateRenderPass(pVulkanDeviceHandle->GetDevice(),
+                         &render_pass_info,
+                         nullptr,
+                         &mRenderPass) != VK_SUCCESS) {
+    throw std::runtime_error("failed to create render pass!");
+  }
+
+  VkGraphicsPipelineCreateInfo pipeline_info{};
+  pipeline_info.sType      = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+  pipeline_info.stageCount = 2;
+  pipeline_info.pStages    = shader_stages;
+  pipeline_info.pVertexInputState   = &vertex_input_info;
+  pipeline_info.pInputAssemblyState = &input_assembly_info;
+  pipeline_info.pViewportState      = &viewport_state_info;
+  pipeline_info.pRasterizationState = &rasterization_state_info;
+  pipeline_info.pMultisampleState   = &multisample_state_info;
+  pipeline_info.pDepthStencilState  = nullptr; // Optional
+  pipeline_info.pColorBlendState    = &color_blend_state_info;
+  pipeline_info.pDynamicState       = nullptr; // Optional
+  pipeline_info.layout              = mLayout;
+  pipeline_info.renderPass          = mRenderPass;
+  pipeline_info.subpass             = 0;
+  pipeline_info.basePipelineHandle  = VK_NULL_HANDLE; // Optional
+  pipeline_info.basePipelineIndex   = -1;             // Optional
+
+  if (vkCreateGraphicsPipelines(pVulkanDeviceHandle->GetDevice(),
+                                VK_NULL_HANDLE,
+                                1,
+                                &pipeline_info,
+                                nullptr,
+                                &mGraphicsPipeline) != VK_SUCCESS) {
+    throw std::runtime_error("failed to create graphics pipeline!");
+  }
 }
 
 void VulkanGraphicsPipeline::Cleanup() {
@@ -157,58 +268,15 @@ void VulkanGraphicsPipeline::Cleanup() {
   vkDestroyShaderModule(pVulkanDeviceHandle->GetDevice(),
                         mFragmentShaderModule,
                         nullptr);
+  vkDestroyPipeline(pVulkanDeviceHandle->GetDevice(),
+                    mGraphicsPipeline,
+                    nullptr);
   vkDestroyPipelineLayout(pVulkanDeviceHandle->GetDevice(), mLayout, nullptr);
-}
-
-void VulkanGraphicsPipeline::update_shader_modules() {
-  // TODO: Destroy vulkan objects before recreating
-  compile_glsl_to_spirv();
-  auto vertex_shader_code   = readFile("../Engine/Shaders/vertex.spv");
-  auto fragment_shader_code = readFile("../Engine/Shaders/fragment.spv");
-
-  /* Create vertex shader module*/
-  VkShaderModuleCreateInfo create_info{};
-  create_info.sType    = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-  create_info.codeSize = vertex_shader_code.size();
-  create_info.pCode =
-      reinterpret_cast<const uint32_t *>(vertex_shader_code.data());
-
-  if (vkCreateShaderModule(pVulkanDeviceHandle->GetDevice(),
-                           &create_info,
-                           nullptr,
-                           &mVertexShaderModule) != VK_SUCCESS) {
-    throw std::runtime_error("failed to create vertex shader module!");
-  }
-
-  /* Create fragment shader module*/
-  create_info.codeSize = fragment_shader_code.size();
-  create_info.pCode =
-      reinterpret_cast<const uint32_t *>(fragment_shader_code.data());
-
-  if (vkCreateShaderModule(pVulkanDeviceHandle->GetDevice(),
-                           &create_info,
-                           nullptr,
-                           &mFragmentShaderModule) != VK_SUCCESS) {
-    throw std::runtime_error("failed to create fragment shader module!");
-  }
-}
-
-void VulkanGraphicsPipeline::update_viewport() {
-  mViewport       = VkViewport{};
-  mViewport.x     = 0.0f;
-  mViewport.y     = 0.0f;
-  mViewport.width = (float)pVulkanSwapChainHandle->GetSwapChainExtent2D().width;
-  mViewport.height =
-      (float)pVulkanSwapChainHandle->GetSwapChainExtent2D().height;
-  mViewport.minDepth = 0.0f;
-  mViewport.maxDepth = 1.0f;
-
-  mScissor        = VkRect2D{};
-  mScissor.offset = {0, 0};
-  mScissor.extent = pVulkanSwapChainHandle->GetSwapChainExtent2D();
+  vkDestroyRenderPass(pVulkanDeviceHandle->GetDevice(), mRenderPass, nullptr);
 }
 
 void VulkanGraphicsPipeline::compile_glsl_to_spirv() {
+  FE_CORE_TRACE("Compiling shaders...");
   std::system("pwd");
   std::system("glslc "
               "../Engine/Shaders/shader.vert "

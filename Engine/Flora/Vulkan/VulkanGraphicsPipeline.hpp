@@ -13,8 +13,6 @@ public:
   void Cleanup();
 
 private:
-  void update_shader_modules();
-  void update_viewport();
   void compile_glsl_to_spirv();
 
 private:
@@ -26,6 +24,8 @@ private:
   VkViewport       mViewport;
   VkRect2D         mScissor;
   VkPipelineLayout mLayout;
+  VkRenderPass     mRenderPass;
+  VkPipeline       mGraphicsPipeline;
 };
 
 } // namespace FloraEngine

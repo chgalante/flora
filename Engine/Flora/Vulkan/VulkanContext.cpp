@@ -7,9 +7,11 @@ namespace FloraEngine {
 VulkanContext::VulkanContext() {}
 
 VulkanContext::~VulkanContext() {
-  mVulkanInstance->Cleanup();
-  mVulkanDevice->Cleanup();
+  mVulkanGraphicsPipeline->Cleanup();
+  mVulkanImageViews->Cleanup();
   mVulkanSwapChain->Cleanup();
+  mVulkanDevice->Cleanup();
+  mVulkanInstance->Cleanup();
 }
 
 VulkanWindow *VulkanContext::GetWindow() {
