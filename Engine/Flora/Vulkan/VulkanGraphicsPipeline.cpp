@@ -275,6 +275,10 @@ void VulkanGraphicsPipeline::Cleanup() {
   vkDestroyRenderPass(pVulkanDeviceHandle->GetDevice(), mRenderPass, nullptr);
 }
 
+VkPipeline VulkanGraphicsPipeline::GetGraphicsPipeline() {
+  return mGraphicsPipeline;
+}
+
 VkRenderPass VulkanGraphicsPipeline::GetRenderPass() {
   return mRenderPass;
 }

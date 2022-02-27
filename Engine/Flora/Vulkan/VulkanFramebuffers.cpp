@@ -49,4 +49,8 @@ void VulkanFramebuffers::Cleanup() {
                          nullptr);
   }
 }
+
+std::vector<VkFramebuffer> VulkanFramebuffers::GetFramebuffers() {
+  return mFramebuffers;
+}
 } // namespace FloraEngine

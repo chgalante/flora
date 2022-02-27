@@ -46,6 +46,7 @@ add_library(FloraEngine STATIC
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Vulkan/VulkanImageViews.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Vulkan/VulkanGraphicsPipeline.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Vulkan/VulkanFramebuffers.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Vulkan/VulkanCommandPools.cpp"
 
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Render/RenderCommand.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Flora/Render/Shader.cpp"

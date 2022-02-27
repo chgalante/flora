@@ -1,4 +1,5 @@
 #pragma once
+#include "Flora/Vulkan/VulkanCommandPools.hpp"
 #include "Flora/Vulkan/VulkanDevice.hpp"
 #include "Flora/Vulkan/VulkanFramebuffers.hpp"
 #include "Flora/Vulkan/VulkanGraphicsPipeline.hpp"
@@ -27,5 +28,6 @@ private:
   Scope<VulkanImageViews>       mVulkanImageViews;
   Scope<VulkanGraphicsPipeline> mVulkanGraphicsPipeline;
   Scope<VulkanFramebuffers>     mVulkanFramebuffers;
+  Scope<VulkanCommandPools>     mVulkanCommandPools;
 };
 } // namespace FloraEngine

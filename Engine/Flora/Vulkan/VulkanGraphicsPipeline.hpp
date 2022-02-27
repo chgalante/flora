@@ -12,6 +12,7 @@ public:
   void Init();
   void Cleanup();
 
+  VkPipeline   GetGraphicsPipeline();
   VkRenderPass GetRenderPass();
 
 private:

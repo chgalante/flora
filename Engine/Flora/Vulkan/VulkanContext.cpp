@@ -7,6 +7,7 @@ namespace FloraEngine {
 VulkanContext::VulkanContext() {}
 
 VulkanContext::~VulkanContext() {
+  mVulkanCommandPools->Cleanup();
   mVulkanFramebuffers->Cleanup();
   mVulkanGraphicsPipeline->Cleanup();
   mVulkanImageViews->Cleanup();
@@ -59,6 +60,13 @@ void VulkanContext::Init() {
                                       mVulkanImageViews.get(),
                                       mVulkanGraphicsPipeline.get());
   mVulkanFramebuffers->Init();
+
+  /* Initialize command pools */
+  mVulkanCommandPools =
+      CreateScope<VulkanCommandPools>(mVulkanDevice.get(),
+                                      mVulkanSwapChain.get(),
+                                      mVulkanGraphicsPipeline.get(),
+                                      mVulkanFramebuffers.get());
 }
 
 } // namespace FloraEngine

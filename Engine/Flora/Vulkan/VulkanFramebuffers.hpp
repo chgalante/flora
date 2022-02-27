@@ -17,6 +17,8 @@ public:
   void Init();
   void Cleanup();
 
+  std::vector<VkFramebuffer> GetFramebuffers();
+
 private:
   VulkanDevice           *pVulkanDeviceHandle;
   VulkanSwapChain        *pVulkanSwapChainHandle;
