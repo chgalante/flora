@@ -6,7 +6,7 @@
 namespace FloraEngine {
 class VulkanSwapChain {
 public:
-  VulkanSwapChain(VulkanInstance *, VulkanWindow *, VulkanDevice *);
+  VulkanSwapChain(VulkanWindow *, VulkanInstance *, VulkanDevice *);
   ~VulkanSwapChain();
 
   void Init();

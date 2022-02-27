@@ -1,9 +1,9 @@
 #include "VulkanImageViews.hpp"
 
 namespace FloraEngine {
-VulkanImageViews::VulkanImageViews(VulkanSwapChain *swap_chain,
-                                   VulkanDevice    *device)
-    : pVulkanSwapChainHandle(swap_chain), pVulkanDeviceHandle(device) {}
+VulkanImageViews::VulkanImageViews(VulkanDevice    *device,
+                                   VulkanSwapChain *swap_chain)
+    : pVulkanDeviceHandle(device), pVulkanSwapChainHandle(swap_chain) {}
 
 VulkanImageViews::~VulkanImageViews() {}
 
@@ -47,6 +47,10 @@ void VulkanImageViews::create_vulkan_image_views() {
       throw std::runtime_error("failed to create image views!");
     }
   }
+}
+
+std::vector<VkImageView> VulkanImageViews::GetImageViews() {
+  return mSwapChainImageViews;
 }
 
 } // namespace FloraEngine

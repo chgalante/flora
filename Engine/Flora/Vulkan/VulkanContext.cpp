@@ -7,6 +7,7 @@ namespace FloraEngine {
 VulkanContext::VulkanContext() {}
 
 VulkanContext::~VulkanContext() {
+  mVulkanFramebuffers->Cleanup();
   mVulkanGraphicsPipeline->Cleanup();
   mVulkanImageViews->Cleanup();
   mVulkanSwapChain->Cleanup();
@@ -35,14 +36,14 @@ void VulkanContext::Init() {
   mVulkanDevice->Init();
 
   /* Initialize swap chain */
-  mVulkanSwapChain = CreateScope<VulkanSwapChain>(mVulkanInstance.get(),
-                                                  mVulkanWindow.get(),
+  mVulkanSwapChain = CreateScope<VulkanSwapChain>(mVulkanWindow.get(),
+                                                  mVulkanInstance.get(),
                                                   mVulkanDevice.get());
   mVulkanSwapChain->Init();
 
   /* Initialize image views */
-  mVulkanImageViews = CreateScope<VulkanImageViews>(mVulkanSwapChain.get(),
-                                                    mVulkanDevice.get());
+  mVulkanImageViews = CreateScope<VulkanImageViews>(mVulkanDevice.get(),
+                                                    mVulkanSwapChain.get());
   mVulkanImageViews->Init();
 
   /* Initialize graphics pipeline */
@@ -50,6 +51,14 @@ void VulkanContext::Init() {
       CreateScope<VulkanGraphicsPipeline>(mVulkanDevice.get(),
                                           mVulkanSwapChain.get());
   mVulkanGraphicsPipeline->Init();
+
+  /* Initialize framebuffers */
+  mVulkanFramebuffers =
+      CreateScope<VulkanFramebuffers>(mVulkanDevice.get(),
+                                      mVulkanSwapChain.get(),
+                                      mVulkanImageViews.get(),
+                                      mVulkanGraphicsPipeline.get());
+  mVulkanFramebuffers->Init();
 }
 
 } // namespace FloraEngine

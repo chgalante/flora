@@ -2,10 +2,10 @@
 
 namespace FloraEngine {
 
-VulkanSwapChain::VulkanSwapChain(VulkanInstance *instance,
-                                 VulkanWindow   *window,
+VulkanSwapChain::VulkanSwapChain(VulkanWindow   *window,
+                                 VulkanInstance *instance,
                                  VulkanDevice   *device)
-    : pVulkanInstanceHandle(instance), pVulkanWindowHandle(window),
+    : pVulkanWindowHandle(window), pVulkanInstanceHandle(instance),
       pVulkanDeviceHandle(device) {}
 
 VulkanSwapChain::~VulkanSwapChain() {}

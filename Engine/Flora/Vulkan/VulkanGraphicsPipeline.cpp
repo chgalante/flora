@@ -275,6 +275,10 @@ void VulkanGraphicsPipeline::Cleanup() {
   vkDestroyRenderPass(pVulkanDeviceHandle->GetDevice(), mRenderPass, nullptr);
 }
 
+VkRenderPass VulkanGraphicsPipeline::GetRenderPass() {
+  return mRenderPass;
+}
+
 void VulkanGraphicsPipeline::compile_glsl_to_spirv() {
   FE_CORE_TRACE("Compiling shaders...");
   std::system("pwd");

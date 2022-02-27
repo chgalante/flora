@@ -12,6 +12,8 @@ public:
   void Init();
   void Cleanup();
 
+  VkRenderPass GetRenderPass();
+
 private:
   void compile_glsl_to_spirv();
 

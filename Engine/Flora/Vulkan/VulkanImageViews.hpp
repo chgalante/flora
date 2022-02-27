@@ -5,11 +5,13 @@
 namespace FloraEngine {
 class VulkanImageViews {
 public:
-  VulkanImageViews(VulkanSwapChain *, VulkanDevice *);
+  VulkanImageViews(VulkanDevice *, VulkanSwapChain *);
   ~VulkanImageViews();
 
   void Init();
   void Cleanup();
+
+  std::vector<VkImageView> GetImageViews();
 
 private:
   void create_vulkan_image_views();
